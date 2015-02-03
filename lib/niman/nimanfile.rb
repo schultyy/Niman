@@ -2,8 +2,16 @@ require 'niman/library/file'
 
 module Niman
   class Nimanfile
+    attr_reader :instructions
+
+    def initialize
+      @instructions = []
+    end
+
     def file
-      yield(Niman::Library::File.new)
+      f = Niman::Library::File.new
+      yield(f)
+      @instructions.push(f)
     end
   end
 end
