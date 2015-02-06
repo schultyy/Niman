@@ -14,5 +14,9 @@ module Niman
     def self.configuration
       @configuration
     end
+
+    def self.reset!
+      @configuration = Niman::Nimanfile.new
+    end
   end
 end
