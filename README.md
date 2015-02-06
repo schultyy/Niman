@@ -20,7 +20,18 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: Write usage instructions here
+It starts with a `Nimanfile`:
+
+```ruby
+file do |config|
+  config.path = '/home/bob/hello.txt'
+  config.content = 'hello from alice'
+  config.mode = '0600'
+end
+```
+This places a new file `hello.txt` in `/home/bob` with rights 0600.
+
+A `Nimanfile` contains all necessary commands for `niman` to run.
 
 ## Contributing
 
