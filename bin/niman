@@ -1,0 +1,4 @@
+#!/usr/bin/env ruby
+require 'niman'
+
+Niman::CLI::Application.start(ARGV)
