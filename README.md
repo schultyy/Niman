@@ -23,10 +23,12 @@ Or install it yourself as:
 It starts with a `Nimanfile`:
 
 ```ruby
-file do |config|
-  config.path = '/home/bob/hello.txt'
-  config.content = 'hello from alice'
-  config.mode = '0600'
+Niman::Recipe.configure do |config|
+    config.file do |file|
+      file.path = '/home/bob/hello.txt'
+      file.content = 'hello from alice'
+      file.mode = '0600'
+    end
 end
 ```
 This places a new file `hello.txt` in `/home/bob` with rights 0600.
