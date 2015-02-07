@@ -34,15 +34,25 @@ describe Niman::Provisioner do
   end
 
   describe "#run" do
-    it 'raises when instruction is invalid' do
-      allow(provisioner).to receive(:valid?).and_return(false)
-      expect { provisioner.run }.to raise_error(Niman::ConfigError)
+    context 'with invalid instructions' do
+      it 'raises when instruction is invalid' do
+        allow(provisioner).to receive(:valid?).and_return(false)
+        expect { provisioner.run }.to raise_error(Niman::ConfigError)
+      end
     end
 
-    it 'calls run for every instruction' do
-      allow(file).to receive(:run)
-      provisioner.run
-      expect(file).to have_received(:run)
+    context 'with valid instructions' do
+      before do
+        allow(file).to receive(:run)
+      end
+      it 'calls run for every instruction' do
+        provisioner.run
+        expect(file).to have_received(:run)
+      end
+
+      it 'calls block for every instruction' do
+        expect { |b| provisioner.run(&b) }.to yield_with_args(file)
+      end
     end
   end
 end

@@ -14,7 +14,10 @@ module Niman
 
     def run
       raise Niman::ConfigError unless self.valid?
-      @instructions.each(&:run)
+      @instructions.each do |instruction|
+        yield(instruction) if block_given?
+        instruction.run
+      end
     end
   end
 end

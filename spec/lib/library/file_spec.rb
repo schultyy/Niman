@@ -66,4 +66,12 @@ describe Niman::Library::File do
       expect(File.read(path)).to eq content
     end
   end
+
+  describe "#description" do
+    let(:path) { 'hello.txt' }
+    subject(:file) { Niman::Library::File.new(path: path) }
+    it 'contains path' do
+      expect(file.description).to eq "File #{path}"
+    end
+  end
 end
