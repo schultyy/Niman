@@ -28,7 +28,7 @@ module Niman
     end
 
     def linux?
-      unix? && not mac?
+      unix? && !mac?
     end
 
     def linux_variant
