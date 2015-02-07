@@ -20,4 +20,16 @@ describe Niman::Library::Package do
       expect(package.version).to eq ""
     end
   end
+
+  describe '#valid?' do
+    it 'is true when name is present' do
+      package = Niman::Library::Package.new(name: 'vim')
+      expect(package.valid?).to be true
+    end
+
+    it 'is false when name is not present' do
+      package = Niman::Library::Package.new
+      expect(package.valid?).to be false
+    end
+  end
 end
