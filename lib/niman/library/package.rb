@@ -3,8 +3,8 @@ module Niman
     class Package
       include Virtus.model
 
-      attribute :name, String
-      attribute :version, String
+      attribute :name, String, default: ""
+      attribute :version, String, default: ""
     end
   end
 end

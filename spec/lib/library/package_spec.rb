@@ -8,4 +8,16 @@ describe Niman::Library::Package do
       expect(package.respond_to?(attribute)).to be true
     end
   end
+
+  describe "#name" do
+    it "defaults to empty string" do
+      expect(package.name).to eq ""
+    end
+  end
+
+  describe "#version" do
+    it "defaults to empty string" do
+      expect(package.version).to eq ""
+    end
+  end
 end
