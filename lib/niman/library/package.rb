@@ -6,6 +6,10 @@ module Niman
       attribute :name, String, default: ""
       attribute :version, String, default: ""
 
+      def description
+        name
+      end
+
       def valid?
         !name.empty?
       end
