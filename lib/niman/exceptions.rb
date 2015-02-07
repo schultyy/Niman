@@ -4,4 +4,7 @@ module Niman
 
   class InstallError < StandardError
   end
+
+  class UnsupportedOSError < StandardError
+  end
 end
