@@ -1,3 +1,5 @@
+require 'niman/exceptions'
+
 module Niman
   class Provisioner
     attr_reader :instructions
@@ -8,6 +10,10 @@ module Niman
 
     def valid?
       @instructions.all?(&:valid?)
+    end
+
+    def run
+      raise Niman::ConfigError
     end
   end
 end
