@@ -5,5 +5,9 @@ module Niman
     def initialize(instructions)
       @instructions = Array(instructions)
     end
+
+    def valid?
+      @instructions.all?(&:valid?)
+    end
   end
 end
