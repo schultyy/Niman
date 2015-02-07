@@ -1,4 +1,5 @@
 require 'virtus'
+require 'niman/exceptions'
 
 module Niman
   class Installer
@@ -8,7 +9,7 @@ module Niman
     attribute :shell, Object
 
     def install(packages)
-      package_manager = managers.fetch(shell.os)
+      package_manager = managers.fetch(shell.os) { raise Niman::InstallError }
       Array(packages).each do |package|
         shell.exec("#{package_manager} install #{package.name}")
       end

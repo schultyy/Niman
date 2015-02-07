@@ -36,16 +36,23 @@ describe Niman::Installer do
     let(:ssh_package) { Niman::Library::Package.new(name: 'ssh') }
     let(:packages) { [vim_package, ssh_package] }
 
-    before do
-      allow(shell).to receive(:os).and_return(:ubuntu)
-      allow(shell).to receive(:exec)#
-      installer.install(packages)
+    context 'with valid operating system' do
+      before do
+        allow(shell).to receive(:os).and_return(:ubuntu)
+        allow(shell).to receive(:exec)#
+        installer.install(packages)
+      end
+
+      ['vim', 'ssh'].each do |package|
+        it "calls shell for #{package}" do
+          expect(shell).to have_received(:exec).with("apt-get install #{package}")
+        end
+      end
     end
 
-    ['vim', 'ssh'].each do |package|
-      it "calls shell for #{package}" do
-        expect(shell).to have_received(:exec).with("apt-get install #{package}")
-      end
+    it 'raises for unknown operating system' do
+      allow(shell).to receive(:os).and_return(:freebsd)
+      expect { installer.install(packages) }.to raise_error(Niman::InstallError)
     end
   end
 end
