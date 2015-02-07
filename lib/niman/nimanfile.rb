@@ -15,6 +15,9 @@ module Niman
     end
 
     def package
+      package = Niman::Library::Package.new
+      yield(package)
+      @instructions.push(package)
     end
   end
 end
