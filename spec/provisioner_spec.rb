@@ -38,5 +38,11 @@ describe Niman::Provisioner do
       allow(provisioner).to receive(:valid?).and_return(false)
       expect { provisioner.run }.to raise_error(Niman::ConfigError)
     end
+
+    it 'calls run for every instruction' do
+      allow(file).to receive(:run)
+      provisioner.run
+      expect(file).to have_received(:run)
+    end
   end
 end

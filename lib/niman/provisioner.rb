@@ -13,7 +13,8 @@ module Niman
     end
 
     def run
-      raise Niman::ConfigError
+      raise Niman::ConfigError unless self.valid?
+      @instructions.each(&:run)
     end
   end
 end

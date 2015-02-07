@@ -3,6 +3,9 @@ module Niman
     class Task
       def valid?
       end
+
+      def run
+      end
     end
   end
 end
