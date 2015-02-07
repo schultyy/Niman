@@ -12,4 +12,11 @@ describe Niman::Installer do
       expect(installer.managers).to eq managers
     end
   end
+
+  describe "#managers" do
+    it 'defaults to empty hash' do
+      installer = Niman::Installer.new
+      expect(installer.managers).to eq Hash.new
+    end
+  end
 end
