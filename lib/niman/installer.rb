@@ -8,6 +8,10 @@ module Niman
     attribute :shell, Object
 
     def install(packages)
+      package_manager = managers.fetch(shell.os)
+      Array(packages).each do |package|
+        shell.exec("#{package_manager} install #{package.name}")
+      end
     end
   end
 end

@@ -27,20 +27,25 @@ describe Niman::Installer do
   end
 
   describe "#install" do
+    let(:shell) { double() }
     subject(:installer) { Niman::Installer.new(managers: {
         ubuntu: 'apt-get',
         centos: 'yum'
-    })}
+    }, shell: shell)}
     let(:vim_package) { Niman::Library::Package.new(name: 'vim') }
     let(:ssh_package) { Niman::Library::Package.new(name: 'ssh') }
     let(:packages) { [vim_package, ssh_package] }
 
-    it 'accepts a list of packages' do
-      expect{ installer.install(packages) }.to_not raise_error
+    before do
+      allow(shell).to receive(:os).and_return(:ubuntu)
+      allow(shell).to receive(:exec)#
+      installer.install(packages)
     end
 
-    it 'accepts a single package' do
-      expect{ installer.install(vim_package) }.to_not raise_error
+    ['vim', 'ssh'].each do |package|
+      it "calls shell for #{package}" do
+        expect(shell).to have_received(:exec).with("apt-get install #{package}")
+      end
     end
   end
 end
