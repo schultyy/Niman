@@ -11,6 +11,12 @@ describe Niman::Installer do
       installer = Niman::Installer.new(managers: managers)
       expect(installer.managers).to eq managers
     end
+
+    it 'accepts a shell' do
+      shell = double()
+      installer = Niman::Installer.new(shell: shell)
+      expect(installer.shell).to eq shell
+    end
   end
 
   describe "#managers" do
