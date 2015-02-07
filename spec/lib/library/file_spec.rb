@@ -20,4 +20,16 @@ describe Niman::Library::File do
       expect(f.content).to eq 'Alice likes Bob'
     end
   end
+
+  describe '#content' do
+    it 'defaults to empty string' do
+      expect(file.content).to eq ''
+    end
+  end
+
+  describe '#path' do
+    it 'defaults to empty string' do
+      expect(file.path).to eq ''
+    end
+  end
 end

@@ -5,8 +5,8 @@ module Niman
     class File
       include Virtus.model
 
-      attribute :path, String
-      attribute :content, String
+      attribute :path, String, default: ''
+      attribute :content, String, default: ''
     end
   end
 end
