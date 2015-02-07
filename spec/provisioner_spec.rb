@@ -1,18 +1,22 @@
 require 'spec_helper'
 require 'niman/provisioner'
+require 'niman/installer'
 require 'niman/exceptions'
 
 describe Niman::Provisioner do
-  let(:file) { Niman::Library::File.new(path: '~/hello.txt', content: 'ohai') }
-  let(:instructions) { [file] }
-  subject(:provisioner) { Niman::Provisioner.new(instructions) }
+  let(:file)         { Niman::Library::File.new(path: '~/hello.txt', content: 'ohai') }
+  let(:vim_package)  { Niman::Library::Package.new(name: 'vim') }
+  let(:instructions) { [file, vim_package] }
+  let(:installer)    { double(Niman::Installer) }
+  subject(:provisioner) { Niman::Provisioner.new(installer, instructions) }
+
   describe "#initialize" do
     it 'accepts a list of instructions' do
-      expect(provisioner.instructions).to eq [file]
+      expect(provisioner.instructions).to eq [file, vim_package]
     end
 
     it 'accepts a single instruction' do
-      provisioner = Niman::Provisioner.new(file)
+      provisioner = Niman::Provisioner.new(installer, file)
       expect(provisioner.instructions).to eq [file]
     end
   end
@@ -44,14 +48,20 @@ describe Niman::Provisioner do
     context 'with valid instructions' do
       before do
         allow(file).to receive(:run)
-      end
-      it 'calls run for every instruction' do
+        allow(installer).to receive(:install)
         provisioner.run
+      end
+
+      it 'calls run for runable instructions' do
         expect(file).to have_received(:run)
       end
 
+      it 'calls installer for package' do
+        expect(installer).to have_received(:install).with(vim_package)
+      end
+
       it 'calls block for every instruction' do
-        expect { |b| provisioner.run(&b) }.to yield_with_args(file)
+        expect { |b| provisioner.run(&b) }.to yield_successive_args(file, vim_package)
       end
     end
   end
