@@ -13,5 +13,8 @@ module Niman
       yield(f)
       @instructions.push(f)
     end
+
+    def package
+    end
   end
 end
