@@ -32,4 +32,20 @@ describe Niman::Library::File do
       expect(file.path).to eq ''
     end
   end
+
+  describe "#valid?" do
+    specify 'if it has path' do
+      file.path = '/foo/bar'
+      expect(file.valid?).to be true
+    end
+
+    it 'is not valid when path is empty' do
+      expect(file.valid?).to be false
+    end
+
+    it 'is not valid when path is nil' do
+      file.path = nil 
+      expect(file.valid?).to be false
+    end
+  end
 end
