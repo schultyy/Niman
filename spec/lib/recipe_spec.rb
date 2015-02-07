@@ -35,6 +35,7 @@ describe Niman::Recipe do
 
   describe '.from_file' do
     before do
+      FakeFS.deactivate!
       content = <<-EOS
       Niman::Recipe.configure do |config|
         config.file do |file|
@@ -47,6 +48,7 @@ describe Niman::Recipe do
     end
     after do
       File.delete(Niman::Recipe::DEFAULT_FILENAME)
+      FakeFS.activate!
     end
 
     it 'loads "Nimanfile" by default' do

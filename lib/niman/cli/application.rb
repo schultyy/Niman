@@ -1,5 +1,6 @@
 require 'thor'
 require 'niman/recipe'
+require 'niman/provisioner'
 
 module Niman
   module CLI
@@ -7,6 +8,9 @@ module Niman
       desc "apply", "Applies a Nimanfile"
       def apply
         Niman::Recipe.from_file
+        config = Niman::Recipe.configuration
+        provisioner = Niman::Provisioner.new(config.instructions)
+        provisioner.run
       rescue LoadError => e
         error e.message
       end
