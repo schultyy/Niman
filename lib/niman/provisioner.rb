@@ -3,7 +3,7 @@ module Niman
     attr_reader :instructions
 
     def initialize(instructions)
-      @instructions = instructions
+      @instructions = Array(instructions)
     end
   end
 end

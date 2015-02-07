@@ -8,5 +8,10 @@ describe Niman::Provisioner do
       provisioner = Niman::Provisioner.new([file])
       expect(provisioner.instructions).to eq [file]
     end
+
+    it 'accepts a single instruction' do
+      provisioner = Niman::Provisioner.new(file)
+      expect(provisioner.instructions).to eq [file]
+    end
   end
 end
