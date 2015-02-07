@@ -24,16 +24,49 @@ It starts with a `Nimanfile`:
 
 ```ruby
 Niman::Recipe.configure do |config|
-    config.file do |file|
-      file.path = '/home/bob/hello.txt'
-      file.content = 'hello from alice'
-      file.mode = '0600'
-    end
+  config.file do |file|
+    file.path = '/home/bob/hello.txt'
+    file.content = 'hello from alice'
+    file.mode = '0600'
+  end
 end
 ```
 This places a new file `hello.txt` in `/home/bob` with rights 0600.
 
 A `Nimanfile` contains all necessary commands for `niman` to run.
+
+### Packages
+
+Use a concrete package in your script:
+
+```ruby
+Niman::Recipe.configure do |config|
+  config.package do |package|
+    package.name = "vim"
+    package.version = "7.4"
+  end
+end
+```
+
+Custom packages live in `packages/`. Every package gets its own file.
+Package description:
+```ruby
+#packages/ruby.rb
+require 'niman'
+class RubyPackage < Niman::Package
+  package :ubuntu, "ruby1.9.1"
+  package :centos, "ruby1.9.1"
+end
+```
+In your `Nimanfile`:
+```ruby
+Niman::Recipe.configure do |config|
+  config.package do |package|
+    package.name "ruby"
+    package.path = "packages/ruby"
+  end
+end
+```
 
 ## Contributing
 

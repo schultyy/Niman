@@ -1,9 +1,8 @@
 require 'virtus'
-require 'niman/library/task'
 
 module Niman
   module Library
-    class File < Task
+    class File
       include Virtus.model
 
       attribute :path, String, default: ''

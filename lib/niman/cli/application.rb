@@ -1,6 +1,8 @@
 require 'thor'
 require 'niman/recipe'
 require 'niman/provisioner'
+require "niman/shell"
+require "niman/installer"
 
 module Niman
   module CLI
@@ -9,7 +11,12 @@ module Niman
       def apply
         Niman::Recipe.from_file
         config = Niman::Recipe.configuration
-        provisioner = Niman::Provisioner.new(config.instructions)
+        shell = Niman::Shell.new
+        installer = Niman::Installer.new(shell: shell, managers:{
+          debian: 'apt-get',
+          redhat: 'yum -y'
+        })
+        provisioner = Niman::Provisioner.new(installer, config.instructions)
         provisioner.run do |instruction|
           say "Executing task #{instruction.description}"
         end

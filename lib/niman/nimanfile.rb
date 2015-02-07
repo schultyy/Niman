@@ -13,5 +13,11 @@ module Niman
       yield(f)
       @instructions.push(f)
     end
+
+    def package
+      package = Niman::Library::Package.new
+      yield(package)
+      @instructions.push(package)
+    end
   end
 end

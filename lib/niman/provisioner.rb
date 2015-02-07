@@ -4,7 +4,8 @@ module Niman
   class Provisioner
     attr_reader :instructions
 
-    def initialize(instructions)
+    def initialize(installer, instructions)
+      @installer    = installer
       @instructions = Array(instructions)
     end
 
@@ -16,7 +17,11 @@ module Niman
       raise Niman::ConfigError unless self.valid?
       @instructions.each do |instruction|
         yield(instruction) if block_given?
-        instruction.run
+        if instruction.respond_to?(:run)
+          instruction.run
+        else
+          @installer.install(instruction)
+        end
       end
     end
   end
