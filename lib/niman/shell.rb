@@ -1,16 +1,19 @@
 module Niman
   class Shell
     def os
-      output = `uname -a`
       if linux?
-        linux_variant
+        linux_variant[:family]
       else
         raise Niman::UnsupportedOSError
       end
     end
 
-    def exec(command)
-      `#{command}`
+    def exec(command, use_sudo=false)
+      if use_sudo
+        `sudo #{command}`
+      else
+        `#{command}`
+      end
     end
 
     private
@@ -41,13 +44,13 @@ module Niman
       end
 
       if File.exists?('/etc/debian_version')
-        variant[:distro] = :debian if r[:distro].nil?
-        variant[:family] = :debian if r[:variant].nil?
+        variant[:distro] = :debian if variant[:distro].nil?
+        variant[:family] = :debian if variant[:variant].nil?
       elsif File.exists?('/etc/redhat-release') or File.exists?('/etc/centos-release')
-        variant[:family] = :redhat if r[:family].nil?
+        variant[:family] = :redhat if variant[:family].nil?
         variant[:distro] = :centos if File.exists?('/etc/centos-release')
       elsif File.exists?('/etc/SuSE-release')
-        variant[:distro] = :sles if r[:distro].nil?
+        variant[:distro] = :sles if variant[:distro].nil?
       end
       variant
     end
