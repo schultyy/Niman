@@ -14,7 +14,7 @@ module Niman
       end
 
       def run
-        File.open(path, "w") { |handle| handle.write(content) }
+        ::File.open(::File.expand_path(path), "w") { |handle| handle.write(content) }
       end
     end
   end
