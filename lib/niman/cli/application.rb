@@ -10,7 +10,9 @@ module Niman
         Niman::Recipe.from_file
         config = Niman::Recipe.configuration
         provisioner = Niman::Provisioner.new(config.instructions)
-        provisioner.run
+        provisioner.run do |instruction|
+          say "Executing task #{instruction.description}"
+        end
       rescue LoadError => e
         error e.message
       end
