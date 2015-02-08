@@ -8,17 +8,20 @@ module Niman
   module CLI
     class Application < Thor
       desc "apply", "Applies a Nimanfile"
+      def initialize(shell=Niman::Shell.new, quiet=false)
+        @shell = shell
+        @quiet = quiet
+      end
       def apply
         Niman::Recipe.from_file
         config = Niman::Recipe.configuration
-        shell = Niman::Shell.new
-        installer = Niman::Installer.new(shell: shell, managers:{
-          debian: 'apt-get',
+        installer = Niman::Installer.new(shell: @shell, managers:{
+          debian: 'apt-get -y',
           redhat: 'yum -y'
         })
         provisioner = Niman::Provisioner.new(installer, config.instructions)
         provisioner.run do |instruction|
-          say "Executing task #{instruction.description}"
+          say "Executing task #{instruction.description}" unless @quiet
         end
       rescue LoadError => e
         error e.message
