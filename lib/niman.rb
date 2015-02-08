@@ -3,5 +3,7 @@ require "niman/cli/application"
 require "niman/library/package"
 
 module Niman
-  # Your code goes here...
+  if defined?(::Vagrant)
+    require 'niman/vagrant/plugin'
+  end
 end
