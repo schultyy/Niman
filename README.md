@@ -1,4 +1,5 @@
 # Niman
+[![Build Status](https://travis-ci.org/schultyy/Niman.svg?branch=master)](https://travis-ci.org/schultyy/Niman)
 
 Niman is a proof-of-concept provisioner.
 
