@@ -1,16 +1,25 @@
 module VagrantPlugins
   class RemoteShell
-    def initialize(communication, user_interface)
+    def initialize(communication, machine)
       @channel = communication
-      @user_interface = user_interface
+      @machine = machine
+      @platform = Niman::Platform.new(ruby_platform)
     end
 
     def os
-      :debian
+      if @platform.linux?
+        variant = @platform.linux_variant(-> (fn){ @machine.communicate.test("cat #{fn}")}, 
+                                -> (fn){ @channel.execute("cat #{fn}") do |type, data|
+                                           data.chomp
+                                         end})
+        variant[:family]
+      else
+        raise Niman::UnsupportedOSError
+      end
     end
 
     def exec(command, use_sudo=false)
-      @user_interface.info(command, {color: :green})
+      @machine.ui.info(command, {color: :green})
       opts = { error_check: false, elevated: true }
       @channel.sudo(command, opts) do |type, data|
         if [:stderr, :stdout].include?(type)
@@ -21,8 +30,16 @@ module VagrantPlugins
           next if data.empty?
           options = {}
           options[:color] = :green
-          @user_interface.info(data.chomp, options)
+          @machine.ui.info(data.chomp, options)
         end
+      end
+    end
+
+    private
+
+    def ruby_platform
+      @channel.execute("ruby -e 'puts RUBY_PLATFORM'") do |type, data|
+        return data.chomp
       end
     end
   end

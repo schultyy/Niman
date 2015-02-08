@@ -1,8 +1,16 @@
+require 'niman/platform'
+
 module Niman
   class Shell
+    def initialize
+      @platform = Niman::Platform.new(RUBY_PLATFORM)
+    end
+
     def os
-      if linux?
-        linux_variant[:family]
+      if @platform.linux?
+        variant = @platform.linux_variant(-> (fn){ File.exists?(fn)}, 
+                                -> (fn){ File.read(fn)})
+        variant[:family]
       else
         raise Niman::UnsupportedOSError
       end
@@ -14,45 +22,6 @@ module Niman
       else
         `#{command}`
       end
-    end
-
-    private
-
-    def windows?
-      (/cygwin|mswin|mingw|bccwin|wince|emx/ =~ RUBY_PLATFORM) != nil
-    end
-
-    def mac?
-      (/darwin/ =~ RUBY_PLATFORM) != nil
-    end
-
-    def unix?
-      !windows?
-    end
-
-    def linux?
-      unix? && !mac?
-    end
-
-    def linux_variant
-      variant = { :distro => nil, :family => nil }
-
-      if File.exists?('/etc/lsb-release')
-        File.open('/etc/lsb-release', 'r').read.each_line do |line|
-          variant = { :distro => $1 } if line =~ /^DISTRIB_ID=(.*)/
-        end
-      end
-
-      if File.exists?('/etc/debian_version')
-        variant[:distro] = :debian if variant[:distro].nil?
-        variant[:family] = :debian if variant[:variant].nil?
-      elsif File.exists?('/etc/redhat-release') or File.exists?('/etc/centos-release')
-        variant[:family] = :redhat if variant[:family].nil?
-        variant[:distro] = :centos if File.exists?('/etc/centos-release')
-      elsif File.exists?('/etc/SuSE-release')
-        variant[:distro] = :sles if variant[:distro].nil?
-      end
-      variant
     end
   end
 end

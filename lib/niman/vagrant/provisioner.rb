@@ -10,10 +10,15 @@ module VagrantPlugins
     def provision
       require 'niman'
       @machine.communicate.tap do |comm|
-        vagrant_shell = VagrantPlugins::RemoteShell.new(comm, @machine.ui)
-        app = Niman::CLI::Application.new(vagrant_shell, true)
+        vagrant_shell = VagrantPlugins::RemoteShell.new(comm, @machine)
+        app = Niman::CLI::Application.new
+        app.shell  = vagrant_shell
+        app.silent = true
         app.apply
       end
+    end
+
+    def cleanup
     end
   end
 end
