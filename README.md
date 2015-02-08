@@ -1,6 +1,6 @@
 # Niman
 
-TODO: Write a gem description
+Niman is a proof-of-concept provisioner.
 
 ## Installation
 
@@ -66,6 +66,14 @@ Niman::Recipe.configure do |config|
     package.path = "packages/ruby"
   end
 end
+```
+
+### Apply `Nimanfile`
+
+To apply a `Nimanfile` run:
+
+```bash
+$ niman apply
 ```
 
 ## Contributing
