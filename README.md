@@ -77,6 +77,20 @@ To apply a `Nimanfile` run:
 $ niman apply
 ```
 
+### Use it as a Vagrant plugin
+
+At first, install it as Vagrant plugin:
+```bash
+$ vagrant plugin install niman
+```
+
+Then, in `Vagrantfile`, add this line:
+
+```ruby
+config.vm.provision "niman"
+```
+Save the file and after this you can `vagrant provision`.
+
 ## Contributing
 
 1. Fork it ( https://github.com/[my-github-username]/niman/fork )
