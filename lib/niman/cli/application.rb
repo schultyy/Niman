@@ -3,6 +3,7 @@ require 'niman/recipe'
 require 'niman/provisioner'
 require "niman/shell"
 require "niman/installer"
+require "niman/filehandler"
 
 module Niman
   module CLI
@@ -23,7 +24,8 @@ module Niman
           debian: 'apt-get -y',
           redhat: 'yum -y'
         })
-        provisioner = Niman::Provisioner.new(installer, config.instructions)
+        filehandler = Niman::FileHandler.new(client_shell)
+        provisioner = Niman::Provisioner.new(installer, filehandler, config.instructions)
         this = self
         provisioner.run do |instruction|
           this.say "Executing task #{instruction.description}" unless @quiet
