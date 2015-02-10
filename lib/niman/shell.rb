@@ -25,7 +25,7 @@ module Niman
     end
 
     def create_file(path, content)
-      File.open(path, 'w') do |handle|
+      File.open(File.expand_path(path), 'w') do |handle|
         handle.write(content)
       end
     end
