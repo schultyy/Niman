@@ -32,5 +32,11 @@ module Niman
         STDOUT.puts message
       end
     end
+
+    def create_file(path, content)
+      File.open(File.expand_path(path), 'w') do |handle|
+        handle.write(content)
+      end
+    end
   end
 end

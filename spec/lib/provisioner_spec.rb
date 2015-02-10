@@ -8,7 +8,8 @@ describe Niman::Provisioner do
   let(:vim_package)  { Niman::Library::Package.new(name: 'vim') }
   let(:instructions) { [file, vim_package] }
   let(:installer)    { double(Niman::Installer) }
-  subject(:provisioner) { Niman::Provisioner.new(installer, instructions) }
+  let(:filehandler)  { double(Niman::FileHandler) }
+  subject(:provisioner) { Niman::Provisioner.new(installer, filehandler, instructions) }
 
   describe "#initialize" do
     it 'accepts a list of instructions' do
@@ -16,7 +17,7 @@ describe Niman::Provisioner do
     end
 
     it 'accepts a single instruction' do
-      provisioner = Niman::Provisioner.new(installer, file)
+      provisioner = Niman::Provisioner.new(installer, filehandler, file)
       expect(provisioner.instructions).to eq [file]
     end
   end
@@ -47,13 +48,13 @@ describe Niman::Provisioner do
 
     context 'with valid instructions' do
       before do
-        allow(file).to receive(:run)
+        allow(filehandler).to receive(:run)
         allow(installer).to receive(:install)
         provisioner.run
       end
 
-      it 'calls run for runable instructions' do
-        expect(file).to have_received(:run)
+      it 'calls file handler for files' do
+        expect(filehandler).to have_received(:run).with(file)
       end
 
       it 'calls installer for package' do
