@@ -17,12 +17,12 @@ describe Niman::FileHandler do
 
   describe '#run' do
     before do
-      allow(shell).to receive(:exec)
+      allow(shell).to receive(:create_file)
       filehandler.run(files)
     end
 
     it 'writes files' do
-      expect(shell).to have_received(:exec).twice
+      expect(shell).to have_received(:create_file).twice
     end
   end
 end

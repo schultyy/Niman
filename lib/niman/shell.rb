@@ -23,5 +23,11 @@ module Niman
         `#{command}`
       end
     end
+
+    def create_file(path, content)
+      File.open(path, 'w') do |handle|
+        handle.write(content)
+      end
+    end
   end
 end

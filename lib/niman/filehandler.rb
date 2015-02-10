@@ -8,7 +8,7 @@ module Niman
 
     def run(files)
       files.each do |file|
-        shell.exec(`echo #{file.content} > #{file.path}`)
+        shell.create_file(file.path, file.content)
       end
     end
   end
