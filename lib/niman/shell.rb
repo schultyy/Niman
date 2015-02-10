@@ -23,5 +23,14 @@ module Niman
         `#{command}`
       end
     end
+
+    def print(message, type)
+      case type
+      when :error
+        STDERR.puts message
+      else
+        STDOUT.puts message
+      end
+    end
   end
 end

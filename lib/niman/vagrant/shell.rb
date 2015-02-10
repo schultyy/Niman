@@ -35,6 +35,15 @@ module VagrantPlugins
       end
     end
 
+    def print(message, type)
+      case type
+      when :error
+        @machine.ui.error(message, {:color => :red})
+      else
+        @machine.ui.info(message, {:color => :green})
+      end
+    end
+
     private
 
     def ruby_platform

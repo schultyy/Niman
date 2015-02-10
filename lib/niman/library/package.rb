@@ -13,6 +13,10 @@ module Niman
       def valid?
         !name.empty?
       end
+
+      def errors
+        'package name must not be empty'
+      end
     end
   end
 end

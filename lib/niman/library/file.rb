@@ -12,6 +12,10 @@ module Niman
         !self.path.nil? && !self.path.empty?
       end
 
+      def errors
+        ['file path must not be nil and empty']
+      end
+
       def run
         ::File.open(::File.expand_path(path), "w") { |handle| handle.write(content) }
       end
