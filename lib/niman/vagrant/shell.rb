@@ -10,7 +10,7 @@ module VagrantPlugins
       if @platform.linux?
         variant = @platform.linux_variant(-> (fn){ @machine.communicate.test("cat #{fn}")}, 
                                           -> (fn){ @channel.execute("cat #{fn}") { |type, data| data.chomp}})
-                                          variant[:family]
+        variant[:family]
       else
         raise Niman::UnsupportedOSError
       end
