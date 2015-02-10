@@ -34,7 +34,7 @@ module VagrantPlugins
     end
 
     def create_file(path, content)
-      @channel.sudo(`echo #{content} > #{path}`) do |type, data|
+      @channel.sudo(`echo #{content} > #{File.expand_path(path)}`) do |type, data|
         #Output the data with the proper color based on the stream.
         color = type == :stdout ? :green : :red
         # Clear out the newline since we add one
