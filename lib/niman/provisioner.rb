@@ -14,8 +14,12 @@ module Niman
       @instructions.all?(&:valid?)
     end
 
+    def errors
+      @instructions.map(&:errors).flatten.join("\n")
+    end
+
     def run
-      raise Niman::ConfigError unless self.valid?
+      raise Niman::ConfigError, self.errors unless self.valid?
       @instructions.each do |instruction|
         yield(instruction) if block_given?
         if instruction.respond_to?(:run)

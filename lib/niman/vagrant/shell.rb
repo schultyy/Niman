@@ -33,6 +33,15 @@ module VagrantPlugins
       end
     end
 
+    def print(message, type)
+      case type
+      when :error
+        @machine.ui.error(message, {:color => :red})
+      else
+        @machine.ui.info(message, {:color => :green})
+      end
+    end
+
     def create_file(path, content)
       @channel.sudo(`echo #{content} > #{File.expand_path(path)}`) do |type, data|
         #Output the data with the proper color based on the stream.

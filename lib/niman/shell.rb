@@ -24,6 +24,15 @@ module Niman
       end
     end
 
+    def print(message, type)
+      case type
+      when :error
+        STDERR.puts message
+      else
+        STDOUT.puts message
+      end
+    end
+
     def create_file(path, content)
       File.open(File.expand_path(path), 'w') do |handle|
         handle.write(content)
