@@ -9,9 +9,7 @@ module VagrantPlugins
     def os
       if @platform.linux?
         variant = @platform.linux_variant(-> (fn){ @machine.communicate.test("cat #{fn}")}, 
-                                -> (fn){ @channel.execute("cat #{fn}") do |type, data|
-                                           data.chomp
-                                         end})
+                                          -> (fn){ @channel.execute("cat #{fn}") { |type, data| data.chomp}})
         variant[:family]
       else
         raise Niman::UnsupportedOSError
@@ -32,6 +30,19 @@ module VagrantPlugins
           options[:color] = :green
           @machine.ui.info(data.chomp, options)
         end
+      end
+    end
+
+    def create_file(path, content)
+      @channel.sudo(`echo #{content} > #{File.expand_path(path)}`) do |type, data|
+        #Output the data with the proper color based on the stream.
+        color = type == :stdout ? :green : :red
+        # Clear out the newline since we add one
+        data = data.chomp
+        next if data.empty?
+        options = {}
+        options[:color] = :green
+        @machine.ui.info(data.chomp, options)
       end
     end
 
