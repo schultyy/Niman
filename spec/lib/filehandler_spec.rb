@@ -18,11 +18,26 @@ describe Niman::FileHandler do
   describe '#run' do
     before do
       allow(shell).to receive(:create_file)
-      filehandler.run(files)
     end
 
-    it 'writes files' do
-      expect(shell).to have_received(:create_file).twice
+    context 'with multiple files' do
+      before do
+        filehandler.run(files)
+      end
+
+      it 'writes files' do
+        expect(shell).to have_received(:create_file).twice
+      end
+    end
+
+    context 'with single file' do
+      before do
+        filehandler.run(file1)
+      end
+
+      it 'writes file' do
+        expect(shell).to have_received(:create_file).once
+      end
     end
   end
 end

@@ -7,7 +7,7 @@ module Niman
     end
 
     def run(files)
-      files.each do |file|
+      Array(files).each do |file|
         shell.create_file(file.path, file.content)
       end
     end
