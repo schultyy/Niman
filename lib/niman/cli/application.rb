@@ -17,10 +17,10 @@ module Niman
         @silent = false
       end
 
-      desc "apply", "Applies a Nimanfile"
-      def apply
+      desc "apply [NIMANFILE]", "Applies a Nimanfile"
+      def apply(file='Nimanfile')
         begin
-          Niman::Recipe.from_file
+          Niman::Recipe.from_file(file)
           config = Niman::Recipe.configuration
           installer = Niman::Installer.new(shell: client_shell, managers:{
             debian: 'apt-get -y',
