@@ -16,13 +16,12 @@ module Niman
       @configuration
     end
 
-    def self.reset!
+    def self.reset
       @configuration = Niman::Nimanfile.new
     end
 
-    def self.from_file
-      path = File.join(Dir.pwd, DEFAULT_FILENAME)
-      load DEFAULT_FILENAME
+    def self.from_file(filename)
+      load filename
     end
   end
 end
