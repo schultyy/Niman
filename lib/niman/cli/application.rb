@@ -17,10 +17,10 @@ module Niman
         @silent = false
       end
 
-      desc "apply", "Applies a Nimanfile"
-      def apply
+      desc "apply [NIMANFILE]", "Applies a Nimanfile"
+      def apply(file='Nimanfile')
         begin
-          Niman::Recipe.from_file
+          Niman::Recipe.from_file(file)
           config = Niman::Recipe.configuration
           installer = Niman::Installer.new(shell: client_shell, managers:{
             debian: 'apt-get -y',
@@ -39,16 +39,16 @@ module Niman
         end
       end
 
-      desc "setup", "Generates an empty Nimanfile"
-      def setup
+      desc "setup [FILENAME]", "Generates an empty Nimanfile"
+      def setup(filename=Niman::Recipe::DEFAULT_FILENAME)
         content = <<-EOS
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 Niman::Recipe.configure do |config|
 end
         EOS
-        File.open(Niman::Recipe::DEFAULT_FILENAME, "w") { |handle| handle.write(content) }
-        say "Created new file #{Niman::Recipe::DEFAULT_FILENAME}"
+        File.open(filename, "w") { |handle| handle.write(content) }
+        say "Created new file #{filename}"
       end
     end
   end

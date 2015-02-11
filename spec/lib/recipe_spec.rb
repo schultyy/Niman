@@ -25,7 +25,7 @@ describe Niman::Recipe do
           file.content = 'hello from alice'
         end
       end
-      Niman::Recipe.reset!
+      Niman::Recipe.reset
     end
 
     it 'erases current configuration' do
@@ -45,14 +45,21 @@ describe Niman::Recipe do
       end
       EOS
       File.open(Niman::Recipe::DEFAULT_FILENAME, "w") {|handle| handle.write(content) }
+      File.open('CustomNimanfile', "w") {|handle| handle.write(content) }
     end
     after do
       File.delete(Niman::Recipe::DEFAULT_FILENAME)
       FakeFS.activate!
+      Niman::Recipe.reset
     end
 
-    it 'loads "Nimanfile" by default' do
-      Niman::Recipe.from_file
+    it 'loads "Nimanfile"' do
+      Niman::Recipe.from_file(Niman::Recipe::DEFAULT_FILENAME)
+      expect(Niman::Recipe.configuration.instructions.length).to eq 1
+    end
+
+    it 'loads Nimanfile from custom path' do
+      Niman::Recipe.from_file('CustomNimanfile')
       expect(Niman::Recipe.configuration.instructions.length).to eq 1
     end
   end
