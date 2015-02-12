@@ -8,8 +8,8 @@ module Niman
       @instructions = []
     end
 
-    def file
-      f = Niman::Library::File.new
+    def file(path)
+      f = Niman::Library::File.new(path: path)
       yield(f)
       @instructions.push(f)
     end

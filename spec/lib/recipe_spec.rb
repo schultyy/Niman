@@ -5,8 +5,7 @@ describe Niman::Recipe do
   describe '.configure' do
     before do
       Niman::Recipe.configure do |config|
-        config.file do |file|
-          file.path = '/home/bob/hello.txt'
+        config.file '/home/bob/hello.txt' do |file|
           file.content = 'hello from alice'
         end
       end
@@ -20,8 +19,7 @@ describe Niman::Recipe do
   describe '.reset' do
     before do
       Niman::Recipe.configure do |config|
-        config.file do |file|
-          file.path = '/home/bob/hello.txt'
+        config.file '/home/bob/hello.txt' do |file|
           file.content = 'hello from alice'
         end
       end
@@ -38,8 +36,7 @@ describe Niman::Recipe do
       FakeFS.deactivate!
       content = <<-EOS
       Niman::Recipe.configure do |config|
-        config.file do |file|
-          file.path = '/home/bob/hello.txt'
+        config.file '/home/bob/hello.txt' do |file|
           file.content = 'hello from alice'
         end
       end

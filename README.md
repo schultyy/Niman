@@ -25,10 +25,8 @@ It starts with a `Nimanfile`:
 
 ```ruby
 Niman::Recipe.configure do |config|
-  config.file do |file|
-    file.path = '/home/bob/hello.txt'
+  config.file '/home/bob/hello.txt' do |file|
     file.content = 'hello from alice'
-    file.mode = '0600'
   end
 end
 ```
