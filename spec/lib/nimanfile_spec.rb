@@ -15,8 +15,15 @@ describe Niman::Nimanfile do
     end
   end
 
-  specify 'file calls block with config object' do
-    expect { |b| niman_file.file(&b) }.to yield_with_args(Niman::Library::File)
+  describe '#file' do
+    it 'calls block with config object' do
+      expect { |b| niman_file.file('/home/foo.txt', &b) }.to yield_with_args(Niman::Library::File)
+    end
+
+    it 'sets path' do
+      niman_file.file('/home/foo.txt') {}
+      expect(niman_file.instructions.first.path).to eq '/home/foo.txt'
+    end
   end
 
   specify 'package calls block with config object' do
@@ -25,7 +32,7 @@ describe Niman::Nimanfile do
 
   describe '#instructions' do
     before do
-      niman_file.file {}
+      niman_file.file('') {}
     end
 
     specify 'increases when #file is being called' do
