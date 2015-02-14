@@ -9,4 +9,12 @@ describe Niman::Library::CustomPackage do
       expect(package.package_names.length).to eq 1
     end
   end
+
+  describe ".file" do
+    it 'accepts a filename' do
+      path = '/etc/nginx/nginx.conf'
+      package.file(path)
+      expect(package.files.first.path).to eq path
+    end
+  end
 end
