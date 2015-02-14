@@ -11,10 +11,14 @@ describe Niman::Library::CustomPackage do
   end
 
   describe ".file" do
+    let(:path) { '/etc/nginx/nginx.conf' }
     it 'accepts a filename' do
-      path = '/etc/nginx/nginx.conf'
       package.file(path)
       expect(package.files.first.path).to eq path
+    end
+
+    it 'accepts a block and passes a file object' do
+      expect { |b| package.file(path, &b) }.to yield_with_args(Niman::Library::File)
     end
   end
 end

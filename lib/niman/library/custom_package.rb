@@ -11,7 +11,9 @@ module Niman
 
         def file(path)
           @files ||= []
-          @files << Niman::Library::File.new(path: path)
+          file = Niman::Library::File.new(path: path)
+          yield file if block_given?
+          @files << file
         end
       end
     end
