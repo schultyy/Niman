@@ -4,16 +4,22 @@ require 'niman/installer'
 require 'niman/exceptions'
 
 describe Niman::Provisioner do
-  let(:file)         { Niman::Library::File.new(path: '~/hello.txt', content: 'ohai') }
-  let(:vim_package)  { Niman::Library::Package.new(name: 'vim') }
-  let(:instructions) { [file, vim_package] }
-  let(:installer)    { double(Niman::Installer) }
-  let(:filehandler)  { double(Niman::FileHandler) }
+  let(:file)          { Niman::Library::File.new(path: '~/hello.txt', content: 'ohai') }
+  let(:vim_package)   { Niman::Library::Package.new(name: 'vim') }
+  let(:nginx_package) { Class.new(Niman::Library::CustomPackage) do
+    package_name :ubuntu, 'nginx'
+    file '/etc/nginx/nginx.conf' do |file|
+      file.content = 'foo'
+    end
+  end}
+  let(:instructions)  { [file,vim_package, nginx_package] }
+  let(:installer)     { double(Niman::Installer) }
+  let(:filehandler)   { double(Niman::FileHandler) }
   subject(:provisioner) { Niman::Provisioner.new(installer, filehandler, instructions) }
 
   describe "#initialize" do
     it 'accepts a list of instructions' do
-      expect(provisioner.instructions).to eq [file, vim_package]
+      expect(provisioner.instructions).to eq instructions
     end
 
     it 'accepts a single instruction' do
@@ -57,12 +63,16 @@ describe Niman::Provisioner do
         expect(filehandler).to have_received(:run).with(file)
       end
 
+      it 'calls file handler for custom package files' do
+        expect(filehandler).to have_received(:run).with(nginx_package.files.first)
+      end
+
       it 'calls installer for package' do
         expect(installer).to have_received(:install).with(vim_package)
       end
 
       it 'calls block for every instruction' do
-        expect { |b| provisioner.run(&b) }.to yield_successive_args(file, vim_package)
+        expect { |b| provisioner.run(&b) }.to yield_successive_args(file, vim_package, nginx_package)
       end
     end
   end

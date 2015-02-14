@@ -22,6 +22,11 @@ module Niman
       raise Niman::ConfigError, self.errors unless self.valid?
       @instructions.each do |instruction|
         yield(instruction) if block_given?
+        if instruction.respond_to?(:files)
+          instruction.files.each do |file|
+            @filehandler.run(file)
+          end
+        end
         if instruction.respond_to?(:run)
           @filehandler.run(instruction)
         else
