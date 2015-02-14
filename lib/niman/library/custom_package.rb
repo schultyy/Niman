@@ -21,6 +21,15 @@ module Niman
           yield file if block_given?
           @files << file
         end
+
+        def errors
+          return [] if self.valid?
+          package_names.keys.map do |key|
+            if package_names[key].empty?
+              "No package name configured for OS #{key}"
+            end
+          end.flatten
+        end
       end
     end
   end

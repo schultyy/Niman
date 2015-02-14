@@ -41,4 +41,16 @@ describe Niman::Library::CustomPackage do
       expect(package.valid?).to be true
     end
   end
+
+  describe '.errors' do
+    it 'returns empty array when package is valid' do
+      package.package_name :centos, 'foo'
+      expect(package.errors).to eq []
+    end
+
+    it 'returns error when package is not valid' do
+      package.package_name :centos, ''
+      expect(package.errors).to_not be nil
+    end
+  end
 end
