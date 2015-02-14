@@ -4,6 +4,10 @@ module Niman
       class << self
         attr_reader :package_names, :files
 
+        def valid?
+          false
+        end
+
         def package_name(os, name)
           @package_names ||= {}
           @package_names[os.to_sym] = name

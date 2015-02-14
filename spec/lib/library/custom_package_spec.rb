@@ -21,4 +21,10 @@ describe Niman::Library::CustomPackage do
       expect { |b| package.file(path, &b) }.to yield_with_args(Niman::Library::File)
     end
   end
+
+  describe '.valid?' do
+    it 'is not valid when package_names not set' do
+      expect(package.valid?).to be false
+    end
+  end
 end
