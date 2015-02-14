@@ -2,7 +2,11 @@ require 'spec_helper'
 require 'niman/library/custom_package'
 
 describe Niman::Library::CustomPackage do
-  it 'responds to name' do
-    expect(Niman::Library::CustomPackage.respond_to?(:name)).to be true
+  subject(:package) { Niman::Library::CustomPackage }
+  describe '.package_name' do
+    it 'sets a package name for a certain OS' do
+      package.package_name(:centos, 'ngnix')
+      expect(package.package_names.length).to eq 1
+    end
   end
 end
