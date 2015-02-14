@@ -23,8 +23,16 @@ describe Niman::Library::CustomPackage do
   end
 
   describe '.valid?' do
+    before do
+      package.instance_variable_set(:@package_names, {})
+    end
     it 'is not valid when package_names not set' do
       expect(package.valid?).to be false
+    end
+
+    it 'is valid when at least one package name is set' do
+      package.package_name :ubuntu, 'nginx'
+      expect(package.valid?).to be true
     end
   end
 end
