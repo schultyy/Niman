@@ -5,7 +5,9 @@ module Niman
         attr_reader :package_names, :files
 
         def valid?
-          !package_names.nil? && !package_names.empty?
+          !package_names.nil? &&
+          !package_names.empty? &&
+          package_names.keys.all?{|k| !package_names[k].empty?}
         end
 
         def package_name(os, name)
