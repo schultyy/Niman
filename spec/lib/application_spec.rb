@@ -59,9 +59,29 @@ describe Niman::CLI::Application do
     end
   end
 
-  describe "custom packages" do
-    before do
-      nginx_package = <<-EOS
+  describe "custom package" do
+    context 'is nonexistant' do
+      before do
+        nimanfile = <<-EOS
+            #-*- mode: ruby -*-
+            # vi: set ft=ruby :
+            require 'niman'
+            Niman::Recipe.configure do |config|
+              config.package "packages/nginx" 
+            end
+        EOS
+        File.open(Niman::Recipe::DEFAULT_FILENAME, "w") {|h| h.write(nimanfile)}
+        allow(shell).to receive(:print)
+        application.apply
+      end
+
+      it 'prints out validation error' do
+        expect(shell).to have_received(:print)
+      end
+    end
+    context 'is existant' do
+      before do
+        nginx_package = <<-EOS
        require 'niman'
 
        class Nginx < Niman::Library::CustomPackage
@@ -71,32 +91,34 @@ describe Niman::CLI::Application do
              config.content = 'foo bar'
          end
        end
-      EOS
-      nimanfile = <<-EOS
+        EOS
+
+        nimanfile = <<-EOS
       #-*- mode: ruby -*-
       # vi: set ft=ruby :
       require 'niman'
       Niman::Recipe.configure do |config|
         config.package "packages/nginx" 
       end
-      EOS
-      FileUtils.mkdir("packages")
-      File.open("packages/nginx.rb", "w") {|h| h.write(nginx_package)}
-      File.open(Niman::Recipe::DEFAULT_FILENAME, "w") {|h| h.write(nimanfile)}
-      allow(shell).to receive(:create_file)
-      allow(shell).to receive(:exec)
-      application.apply
-    end
-    after do
-      FileUtils.rm_r("packages")
-    end
+        EOS
+        FileUtils.mkdir("packages")
+        File.open("packages/nginx.rb", "w") {|h| h.write(nginx_package)}
+        File.open(Niman::Recipe::DEFAULT_FILENAME, "w") {|h| h.write(nimanfile)}
+        allow(shell).to receive(:create_file)
+        allow(shell).to receive(:exec)
+        application.apply
+      end
+      after do
+        FileUtils.rm_r("packages")
+      end
 
-    it 'installs nginx package' do
-      expect(shell).to have_received(:exec).with("apt-get -y install nginx", true)
-    end
+      it 'installs nginx package' do
+        expect(shell).to have_received(:exec).with("apt-get -y install nginx", true)
+      end
 
-    it 'writes /etc/nginx/nginx.conf' do
-      expect(shell).to have_received(:create_file).with('/etc/nginx/nginx.conf', 'foo bar')
+      it 'writes /etc/nginx/nginx.conf' do
+        expect(shell).to have_received(:create_file).with('/etc/nginx/nginx.conf', 'foo bar')
+      end
     end
   end
 end
