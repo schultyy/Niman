@@ -13,6 +13,10 @@ describe Niman::CLI::Application do
     allow(shell).to receive(:os).and_return(:debian)
   end
 
+  after do
+    Niman::Recipe.reset
+  end
+
   describe "install packages" do
     before do
       nimanfile = <<-EOS
