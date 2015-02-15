@@ -57,6 +57,9 @@ describe Niman::Library::File do
     before do
       file.run
     end
+    after do
+      File.delete(path)
+    end
 
     it 'creates a file at path' do
       expect(File.exists?(path)).to be true

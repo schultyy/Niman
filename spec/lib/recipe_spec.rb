@@ -46,6 +46,7 @@ describe Niman::Recipe do
     end
     after do
       File.delete(Niman::Recipe::DEFAULT_FILENAME)
+      File.delete('CustomNimanfile')
       FakeFS.activate!
       Niman::Recipe.reset
     end
