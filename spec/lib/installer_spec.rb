@@ -69,6 +69,18 @@ describe Niman::Installer do
       end
     end
 
+    context 'with unsupported custom package' do
+      let(:custom_nginx_package) { Class.new(Niman::Library::CustomPackage) do
+        package_name :gentoo, 'nginx-full'
+      end  }
+      before do
+        allow(shell).to receive(:os).and_return(:redhat)
+      end
+      it 'raises error' do
+        expect { installer.install(custom_nginx_package) }.to raise_error(Niman::InstallError)
+      end
+    end
+
     it 'raises for unknown operating system' do
       allow(shell).to receive(:os).and_return(:freebsd)
       expect { installer.install(packages) }.to raise_error(Niman::InstallError)
