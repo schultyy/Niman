@@ -63,10 +63,7 @@ end
 In your `Nimanfile`:
 ```ruby
 Niman::Recipe.configure do |config|
-  config.package do |package|
-    package.name "ruby"
-    package.path = "packages/ruby"
-  end
+  config.package "packages/ruby"
 end
 ```
 
