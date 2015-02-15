@@ -22,6 +22,10 @@ module Niman
           @files << file
         end
 
+        def description
+          ''
+        end
+
         def errors
           return [] if self.valid?
           package_names.keys.map do |key|

@@ -34,7 +34,7 @@ describe Niman::CLI::Application do
       application.apply
     end
 
-    it 'creates a file with content' do
+    specify 'with with content' do
       expect(shell).to have_received(:create_file).with('/etc/nginx/nginx.conf', '...')
     end
   end
@@ -54,12 +54,49 @@ describe Niman::CLI::Application do
       allow(shell).to receive(:exec)
       application.apply
     end
-    after do
-      File.delete(Niman::Recipe::DEFAULT_FILENAME)
-    end
     it 'installs git package' do
       expect(shell).to have_received(:exec).with("apt-get -y install git", true)
     end
   end
 
+  describe "custom packages" do
+    before do
+      nginx_package = <<-EOS
+       require 'niman'
+
+       class Nginx < Niman::Library::CustomPackage
+         package_name :debian, 'nginx'
+
+         file '/etc/nginx/nginx.conf' do |config|
+             config.content = 'foo bar'
+         end
+       end
+      EOS
+      nimanfile = <<-EOS
+      #-*- mode: ruby -*-
+      # vi: set ft=ruby :
+      require 'niman'
+      Niman::Recipe.configure do |config|
+        config.package "packages/nginx" 
+      end
+      EOS
+      FileUtils.mkdir("packages")
+      File.open("packages/nginx.rb", "w") {|h| h.write(nginx_package)}
+      File.open(Niman::Recipe::DEFAULT_FILENAME, "w") {|h| h.write(nimanfile)}
+      allow(shell).to receive(:create_file)
+      allow(shell).to receive(:exec)
+      application.apply
+    end
+    after do
+      FileUtils.rm_r("packages")
+    end
+
+    it 'installs nginx package' do
+      expect(shell).to have_received(:exec).with("apt-get -y install nginx", true)
+    end
+
+    it 'writes /etc/nginx/nginx.conf' do
+      expect(shell).to have_received(:create_file).with('/etc/nginx/nginx.conf', 'foo bar')
+    end
+  end
 end

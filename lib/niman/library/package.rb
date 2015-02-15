@@ -4,6 +4,7 @@ module Niman
       include Virtus.model
 
       attribute :name, String, default: ""
+      attribute :path, String, default: ""
       attribute :version, String, default: ""
 
       def description
@@ -11,7 +12,7 @@ module Niman
       end
 
       def valid?
-        !name.empty?
+        !name.empty? || !path.empty?
       end
 
       def errors
