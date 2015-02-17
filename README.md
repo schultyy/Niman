@@ -42,7 +42,6 @@ Use a concrete package in your script:
 Niman::Recipe.configure do |config|
   config.package do |package|
     package.name = "vim"
-    package.version = "7.4"
   end
 end
 ```
