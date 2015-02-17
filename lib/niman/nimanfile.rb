@@ -14,9 +14,10 @@ module Niman
       @instructions.push(f)
     end
 
-    def package
+    def package(path = nil)
       package = Niman::Library::Package.new
-      yield(package)
+      package.path = path unless path.nil?
+      yield(package) if block_given?
       @instructions.push(package)
     end
   end

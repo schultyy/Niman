@@ -47,7 +47,10 @@ Niman::Recipe.configure do |config|
 end
 ```
 
+#### Custom packages
+
 Custom packages live in `packages/`. Every package gets its own file.
+
 Package description:
 ```ruby
 #packages/ruby.rb
@@ -60,9 +63,24 @@ end
 In your `Nimanfile`:
 ```ruby
 Niman::Recipe.configure do |config|
-  config.package do |package|
-    package.name "ruby"
-    package.path = "packages/ruby"
+  config.package "packages/ruby"
+end
+```
+
+A custom package can have one or more configuration files inside of it:
+
+```ruby
+#packages/nginx
+class NginxPackage < Niman::Package
+  package :ubuntu, 'nginx'
+  
+  configuration '/etc/nginx/nginx.conf' do |config|
+    #general nginx configuration goes here
+    config.content = '...'
+  end
+  
+  configuration '/etc/nginx/sites-available/example.com' do |config|
+    config.content = '...'
   end
 end
 ```

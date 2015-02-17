@@ -5,6 +5,7 @@ require "niman/shell"
 require "niman/installer"
 require "niman/exceptions"
 require "niman/filehandler"
+require "niman/package_resolver"
 
 module Niman
   module CLI
@@ -26,11 +27,13 @@ module Niman
             debian: 'apt-get -y',
             redhat: 'yum -y'
           })
+
+          resolver    = Niman::PackageResolver.new(config.instructions)
           filehandler = Niman::FileHandler.new(client_shell)
-          provisioner = Niman::Provisioner.new(installer, filehandler, config.instructions)
+          provisioner = Niman::Provisioner.new(installer, filehandler, resolver.resolve)
           this = self
           provisioner.run do |instruction|
-            this.say "Executing task #{instruction.description}" unless @quiet
+            this.say "Executing task #{instruction.description}" unless @silent
           end
         rescue LoadError => e
           client_shell.print(e.message, :error)

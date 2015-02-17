@@ -43,10 +43,13 @@ module VagrantPlugins
     end
 
     def create_file(path, content)
-      @channel.sudo(`echo #{content} > #{File.expand_path(path)}`) do |type, data|
-        #Output the data with the proper color based on the stream.
+      if content.include?("\n")
+        cmd = "cat > #{path} << EOL\n#{content}\nEOL"
+      else
+        cmd  = "echo #{content} > #{path}"
+      end
+      @channel.sudo(cmd) do |type, data|
         color = type == :stdout ? :green : :red
-        # Clear out the newline since we add one
         data = data.chomp
         next if data.empty?
         options = {}

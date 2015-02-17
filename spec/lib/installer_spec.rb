@@ -34,6 +34,10 @@ describe Niman::Installer do
     }, shell: shell)}
     let(:vim_package) { Niman::Library::Package.new(name: 'vim') }
     let(:ssh_package) { Niman::Library::Package.new(name: 'ssh') }
+    let(:custom_ruby_package) { Class.new(Niman::Library::CustomPackage) do
+      package_name :redhat, 'ruby-2.0.0-full'
+      package_name :debian, 'ruby-2.0.0'
+    end  }
     let(:packages) { [vim_package, ssh_package] }
 
     context 'with valid operating system' do
@@ -47,6 +51,33 @@ describe Niman::Installer do
         it "calls shell for #{package}" do
           expect(shell).to have_received(:exec).with("apt-get install #{package}", true)
         end
+      end
+    end
+
+    [[:debian, 'apt-get install'], [:redhat, 'yum install']].each do |os, command|
+      context "with custom package on #{os}" do
+        before do
+          allow(shell).to receive(:os).and_return(os)
+          allow(shell).to receive(:exec)
+          installer.install(custom_ruby_package)
+        end
+
+        it 'installs with correct package name' do
+          package_name = custom_ruby_package.package_names[os]
+          expect(shell).to have_received(:exec).with("#{command} #{package_name}", true)
+        end
+      end
+    end
+
+    context 'with unsupported custom package' do
+      let(:custom_nginx_package) { Class.new(Niman::Library::CustomPackage) do
+        package_name :gentoo, 'nginx-full'
+      end  }
+      before do
+        allow(shell).to receive(:os).and_return(:redhat)
+      end
+      it 'raises error' do
+        expect { installer.install(custom_nginx_package) }.to raise_error(Niman::InstallError)
       end
     end
 
