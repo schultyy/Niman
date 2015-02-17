@@ -72,7 +72,7 @@ A custom package can have one or more configuration files inside of it:
 ```ruby
 #packages/nginx
 class NginxPackage < Niman::Package
-  package :ubuntu, 'nginx'
+  package_name :ubuntu, 'nginx'
   
   file '/etc/nginx/nginx.conf' do |config|
     #general nginx configuration goes here
