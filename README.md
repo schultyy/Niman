@@ -56,8 +56,8 @@ Package description:
 #packages/ruby.rb
 require 'niman'
 class RubyPackage < Niman::Package
-  package :ubuntu, "ruby1.9.1"
-  package :centos, "ruby1.9.1"
+  package_name :ubuntu, "ruby1.9.1"
+  package_name :centos, "ruby1.9.1"
 end
 ```
 In your `Nimanfile`:
@@ -74,12 +74,12 @@ A custom package can have one or more configuration files inside of it:
 class NginxPackage < Niman::Package
   package :ubuntu, 'nginx'
   
-  configuration '/etc/nginx/nginx.conf' do |config|
+  file '/etc/nginx/nginx.conf' do |config|
     #general nginx configuration goes here
     config.content = '...'
   end
   
-  configuration '/etc/nginx/sites-available/example.com' do |config|
+  file '/etc/nginx/sites-available/example.com' do |config|
     config.content = '...'
   end
 end
