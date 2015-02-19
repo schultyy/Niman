@@ -1,5 +1,6 @@
 # Niman
 [![Build Status](https://travis-ci.org/schultyy/Niman.svg?branch=master)](https://travis-ci.org/schultyy/Niman)
+[![Code Climate](https://codeclimate.com/github/schultyy/Niman/badges/gpa.svg)](https://codeclimate.com/github/schultyy/Niman)
 
 Niman is a proof-of-concept provisioner.
 
