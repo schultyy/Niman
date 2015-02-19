@@ -1,4 +1,5 @@
 require 'niman/library/file'
+require 'niman/library/command'
 
 module Niman
   class Nimanfile
@@ -19,6 +20,10 @@ module Niman
       package.path = path unless path.nil?
       yield(package) if block_given?
       @instructions.push(package)
+    end
+
+    def exec(command)
+      @instructions.push(Niman::Library::Command.new(command: command))
     end
   end
 end

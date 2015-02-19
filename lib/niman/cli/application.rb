@@ -30,7 +30,7 @@ module Niman
 
           resolver    = Niman::PackageResolver.new(config.instructions)
           filehandler = Niman::FileHandler.new(client_shell)
-          provisioner = Niman::Provisioner.new(installer, filehandler, resolver.resolve)
+          provisioner = Niman::Provisioner.new(installer, filehandler, @client_shell, resolver.resolve)
           this = self
           provisioner.run do |instruction|
             this.say "Executing task #{instruction.description}" unless @silent

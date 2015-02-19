@@ -4,6 +4,7 @@ require 'niman/installer'
 require 'niman/exceptions'
 
 describe Niman::Provisioner do
+  let(:shell)         { double('Shell') }
   let(:file)          { Niman::Library::File.new(path: '~/hello.txt', content: 'ohai') }
   let(:vim_package)   { Niman::Library::Package.new(name: 'vim') }
   let(:nginx_package) { Class.new(Niman::Library::CustomPackage) do
@@ -15,7 +16,7 @@ describe Niman::Provisioner do
   let(:instructions)  { [file,vim_package, nginx_package] }
   let(:installer)     { double(Niman::Installer) }
   let(:filehandler)   { double(Niman::FileHandler) }
-  subject(:provisioner) { Niman::Provisioner.new(installer, filehandler, instructions) }
+  subject(:provisioner) { Niman::Provisioner.new(installer, filehandler, shell, instructions) }
 
   describe "#initialize" do
     it 'accepts a list of instructions' do
@@ -23,7 +24,7 @@ describe Niman::Provisioner do
     end
 
     it 'accepts a single instruction' do
-      provisioner = Niman::Provisioner.new(installer, filehandler, file)
+      provisioner = Niman::Provisioner.new(installer, filehandler, shell, file)
       expect(provisioner.instructions).to eq [file]
     end
   end

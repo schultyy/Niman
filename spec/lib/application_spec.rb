@@ -18,6 +18,24 @@ describe Niman::CLI::Application do
     File.delete(Niman::Recipe::DEFAULT_FILENAME)
   end
 
+  describe "commands" do
+    context 'without sudo' do
+      before do
+        nimanfile = <<-EOS
+        Niman::Recipe.configure do |config|
+          config.exec "touch hello.txt"
+        end
+        EOS
+        File.open(Niman::Recipe::DEFAULT_FILENAME, "w") {|h| h.write(nimanfile)}
+        allow(shell).to receive(:exec)
+        application.apply
+      end
+      it 'is passed to shell' do
+        expect(shell).to have_received(:exec).with("touch hello.txt")
+      end
+    end
+  end
+
   describe "create files" do
     before do
       nimanfile = <<-EOS

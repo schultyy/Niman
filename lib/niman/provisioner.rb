@@ -4,9 +4,10 @@ module Niman
   class Provisioner
     attr_reader :instructions
 
-    def initialize(installer, filehandler, instructions)
+    def initialize(installer, filehandler, shell, instructions)
       @installer    = installer
       @filehandler  = filehandler
+      @shell        = shell
       @instructions = Array(instructions)
     end
 
@@ -29,6 +30,8 @@ module Niman
         end
         if instruction.respond_to?(:run)
           @filehandler.run(instruction)
+        elsif instruction.respond_to?(:command)
+          @shell.exec(instruction.command)
         else
           @installer.install(instruction)
         end
