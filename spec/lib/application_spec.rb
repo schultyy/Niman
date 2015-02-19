@@ -141,6 +141,7 @@ describe Niman::CLI::Application do
             end
 
             exec :sudo, 'ln -s /etc/nginx/sites-available/example.org /etc/nginx/sites-enabled/example.org'
+            exec 'touch ~/install_notes.txt'
           end
         EOS
 
@@ -173,6 +174,10 @@ describe Niman::CLI::Application do
 
       it 'links /etc/nginx/sites-available/example.org' do
         expect(shell).to have_received(:exec).with('ln -s /etc/nginx/sites-available/example.org /etc/nginx/sites-enabled/example.org', true)
+      end
+
+      it 'creates install_notes.txt in home directory' do
+        expect(shell).to have_received(:exec).with('touch ~/install_notes.txt', false)
       end
     end
   end
