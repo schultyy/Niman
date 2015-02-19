@@ -13,6 +13,14 @@ module Niman
       def errors
         "command must not be empty"
       end
+
+      def description
+        if use_sudo == :sudo
+          "sudo #{command}"
+        else
+          command
+        end
+      end
     end
   end
 end
