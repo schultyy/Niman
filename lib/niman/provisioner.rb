@@ -31,7 +31,14 @@ module Niman
         if instruction.respond_to?(:run)
           @filehandler.run(instruction)
         elsif instruction.respond_to?(:command)
-          @shell.exec(instruction.command)
+          puts instruction.use_sudo
+          mode = case instruction.use_sudo
+                 when :sudo
+                   true
+                 when :no_sudo
+                   false
+                 end
+          @shell.exec(instruction.command, mode)
         else
           @installer.install(instruction)
         end

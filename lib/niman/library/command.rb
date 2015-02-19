@@ -4,6 +4,7 @@ module Niman
       include Virtus.model
 
       attribute :command, String
+      attribute :use_sudo, Symbol, default: :no_sudo
 
       def valid?
         !command.empty?

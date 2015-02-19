@@ -22,8 +22,8 @@ module Niman
       @instructions.push(package)
     end
 
-    def exec(command)
-      @instructions.push(Niman::Library::Command.new(command: command))
+    def exec(use_sudo = :no_sudo, command)
+      @instructions.push(Niman::Library::Command.new(command: command, use_sudo: use_sudo))
     end
   end
 end

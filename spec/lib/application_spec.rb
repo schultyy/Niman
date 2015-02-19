@@ -19,29 +19,36 @@ describe Niman::CLI::Application do
   end
 
   describe "commands" do
+    def write_file(body)
+      nimanfile = <<-EOS
+        Niman::Recipe.configure do |config|
+          #{body}
+        end
+      EOS
+      File.open(Niman::Recipe::DEFAULT_FILENAME, "w") {|h| h.write(nimanfile)}
+    end
+
     context 'without sudo' do
       it 'is passed to shell' do
-        nimanfile = <<-EOS
-        Niman::Recipe.configure do |config|
-          config.exec "touch hello.txt"
-        end
-        EOS
-        File.open(Niman::Recipe::DEFAULT_FILENAME, "w") {|h| h.write(nimanfile)}
         allow(shell).to receive(:exec)
+        write_file("config.exec 'touch hello.txt'")
         application.apply
-        expect(shell).to have_received(:exec).with("touch hello.txt")
+        expect(shell).to have_received(:exec).with("touch hello.txt", false)
       end
 
       it 'does not execute when argument is empty' do
-        nimanfile = <<-EOS
-        Niman::Recipe.configure do |config|
-          config.exec ''
-        end
-        EOS
-        File.open(Niman::Recipe::DEFAULT_FILENAME, "w") {|h| h.write(nimanfile)}
+        write_file("config.exec ''")
         allow(shell).to receive(:print).with(any_args)
         application.apply
         expect(shell).to have_received(:print).with(any_args)
+      end
+    end
+    context 'with sudo' do
+      it 'is passed to shell' do
+        allow(shell).to receive(:exec)
+        write_file("config.exec :sudo, 'apt-get update'")
+        application.apply
+        expect(shell).to have_received(:exec).with('apt-get update', true)
       end
     end
   end
