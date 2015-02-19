@@ -131,15 +131,17 @@ describe Niman::CLI::Application do
     context 'is existant' do
       before do
         nginx_package = <<-EOS
-       require 'niman'
+          require 'niman'
 
-       class Nginx < Niman::Library::CustomPackage
-         package_name :debian, 'nginx'
+          class Nginx < Niman::Library::CustomPackage
+            package_name :debian, 'nginx'
 
-         file '/etc/nginx/nginx.conf' do |config|
-             config.content = 'foo bar'
-         end
-       end
+            file '/etc/nginx/nginx.conf' do |config|
+              config.content = 'foo bar'
+            end
+
+            exec :sudo, 'ln -s /etc/nginx/sites-available/example.org /etc/nginx/sites-enabled/example.org'
+          end
         EOS
 
         nimanfile = <<-EOS
@@ -167,6 +169,10 @@ describe Niman::CLI::Application do
 
       it 'writes /etc/nginx/nginx.conf' do
         expect(shell).to have_received(:create_file).with('/etc/nginx/nginx.conf', 'foo bar')
+      end
+
+      it 'links /etc/nginx/sites-available/example.org' do
+        expect(shell).to have_received(:exec).with('ln -s /etc/nginx/sites-available/example.org /etc/nginx/sites-enabled/example.org', true)
       end
     end
   end
