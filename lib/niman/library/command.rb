@@ -6,7 +6,11 @@ module Niman
       attribute :command, String
 
       def valid?
-        true
+        !command.empty?
+      end
+
+      def errors
+        "command must not be empty"
       end
     end
   end

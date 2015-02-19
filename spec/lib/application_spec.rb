@@ -20,7 +20,7 @@ describe Niman::CLI::Application do
 
   describe "commands" do
     context 'without sudo' do
-      before do
+      it 'is passed to shell' do
         nimanfile = <<-EOS
         Niman::Recipe.configure do |config|
           config.exec "touch hello.txt"
@@ -29,9 +29,19 @@ describe Niman::CLI::Application do
         File.open(Niman::Recipe::DEFAULT_FILENAME, "w") {|h| h.write(nimanfile)}
         allow(shell).to receive(:exec)
         application.apply
-      end
-      it 'is passed to shell' do
         expect(shell).to have_received(:exec).with("touch hello.txt")
+      end
+
+      it 'does not execute when argument is empty' do
+        nimanfile = <<-EOS
+        Niman::Recipe.configure do |config|
+          config.exec ''
+        end
+        EOS
+        File.open(Niman::Recipe::DEFAULT_FILENAME, "w") {|h| h.write(nimanfile)}
+        allow(shell).to receive(:print).with(any_args)
+        application.apply
+        expect(shell).to have_received(:print).with(any_args)
       end
     end
   end
