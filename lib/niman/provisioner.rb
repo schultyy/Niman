@@ -31,7 +31,6 @@ module Niman
         if instruction.respond_to?(:run)
           @filehandler.run(instruction)
         elsif instruction.respond_to?(:command)
-          puts instruction.use_sudo
           mode = case instruction.use_sudo
                  when :sudo
                    true

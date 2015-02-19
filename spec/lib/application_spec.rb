@@ -50,6 +50,20 @@ describe Niman::CLI::Application do
         application.apply
         expect(shell).to have_received(:exec).with('apt-get update', true)
       end
+
+      it 'does not execute when argument is empty' do
+        write_file("config.exec :sudo, ''")
+        allow(shell).to receive(:print).with(any_args)
+        application.apply
+        expect(shell).to have_received(:print).with(any_args)
+      end
+
+      it 'does not execute when sudo_mode is unknown' do
+        write_file("config.exec :foo, 'apt-get update'")
+        allow(shell).to receive(:print).with(any_args)
+        application.apply
+        expect(shell).to have_received(:print).with(any_args)
+      end
     end
   end
 
