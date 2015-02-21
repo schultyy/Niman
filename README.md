@@ -35,6 +35,24 @@ This places a new file `hello.txt` in `/home/bob` with rights 0600.
 
 A `Nimanfile` contains all necessary commands for `niman` to run.
 
+### Commands
+
+Niman has support to execute arbitrary commands on the host system:
+
+```ruby
+Niman::Recipe.configure do |config|
+  config.exec "touch ~/hello.txt"
+end
+```
+
+Or if you need sudo privileges:
+
+```ruby
+Niman::Recipe.configure do |config|
+  config.exec :sudo, "apt-get update"
+end
+```
+
 ### Packages
 
 Use a concrete package in your script:

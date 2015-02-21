@@ -18,18 +18,21 @@ module VagrantPlugins
 
     def exec(command, use_sudo=false)
       @machine.ui.info(command, {color: :green})
-      opts = { error_check: false, elevated: true }
-      @channel.sudo(command, opts) do |type, data|
+      opts = { error_check: false, elevated: use_sudo }
+      handler = Proc.new do |type, data|
         if [:stderr, :stdout].include?(type)
-          #Output the data with the proper color based on the stream.
           color = type == :stdout ? :green : :red
-          # Clear out the newline since we add one
           data = data.chomp
           next if data.empty?
           options = {}
           options[:color] = :green
           @machine.ui.info(data.chomp, options)
         end
+      end
+      if use_sudo
+        @channel.sudo(command, opts, &handler)
+      else
+        @channel.execute(command, opts, &handler)
       end
     end
 
@@ -42,20 +45,13 @@ module VagrantPlugins
       end
     end
 
-    def create_file(path, content)
+    def create_file(path, content, use_sudo=false)
       if content.include?("\n")
         cmd = "cat > #{path} << EOL\n#{content}\nEOL"
       else
         cmd  = "echo #{content} > #{path}"
       end
-      @channel.sudo(cmd) do |type, data|
-        color = type == :stdout ? :green : :red
-        data = data.chomp
-        next if data.empty?
-        options = {}
-        options[:color] = :green
-        @machine.ui.info(data.chomp, options)
-      end
+      self.exec(cmd, use_sudo)
     end
 
     private

@@ -2,7 +2,7 @@ module Niman
   module Library
     class CustomPackage
       class << self
-        attr_reader :package_names, :files
+        attr_reader :package_names, :files, :commands
 
         def valid?
           !package_names.nil? &&
@@ -24,6 +24,11 @@ module Niman
 
         def description
           ''
+        end
+
+        def exec(sudo=:no_sudo, command)
+          @commands ||= []
+          @commands << Niman::Library::Command.new(use_sudo: sudo, command: command)
         end
 
         def errors

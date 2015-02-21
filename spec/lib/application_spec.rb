@@ -18,6 +18,55 @@ describe Niman::CLI::Application do
     File.delete(Niman::Recipe::DEFAULT_FILENAME)
   end
 
+  describe "commands" do
+    def write_file(body)
+      nimanfile = <<-EOS
+        Niman::Recipe.configure do |config|
+          #{body}
+        end
+      EOS
+      File.open(Niman::Recipe::DEFAULT_FILENAME, "w") {|h| h.write(nimanfile)}
+    end
+
+    context 'without sudo' do
+      it 'is passed to shell' do
+        allow(shell).to receive(:exec)
+        write_file("config.exec 'touch hello.txt'")
+        application.apply
+        expect(shell).to have_received(:exec).with("touch hello.txt", false)
+      end
+
+      it 'does not execute when argument is empty' do
+        write_file("config.exec ''")
+        allow(shell).to receive(:print).with(any_args)
+        application.apply
+        expect(shell).to have_received(:print).with(any_args)
+      end
+    end
+    context 'with sudo' do
+      it 'is passed to shell' do
+        allow(shell).to receive(:exec)
+        write_file("config.exec :sudo, 'apt-get update'")
+        application.apply
+        expect(shell).to have_received(:exec).with('apt-get update', true)
+      end
+
+      it 'does not execute when argument is empty' do
+        write_file("config.exec :sudo, ''")
+        allow(shell).to receive(:print).with(any_args)
+        application.apply
+        expect(shell).to have_received(:print).with(any_args)
+      end
+
+      it 'does not execute when sudo_mode is unknown' do
+        write_file("config.exec :foo, 'apt-get update'")
+        allow(shell).to receive(:print).with(any_args)
+        application.apply
+        expect(shell).to have_received(:print).with(any_args)
+      end
+    end
+  end
+
   describe "create files" do
     before do
       nimanfile = <<-EOS
@@ -82,15 +131,18 @@ describe Niman::CLI::Application do
     context 'is existant' do
       before do
         nginx_package = <<-EOS
-       require 'niman'
+          require 'niman'
 
-       class Nginx < Niman::Library::CustomPackage
-         package_name :debian, 'nginx'
+          class Nginx < Niman::Library::CustomPackage
+            package_name :debian, 'nginx'
 
-         file '/etc/nginx/nginx.conf' do |config|
-             config.content = 'foo bar'
-         end
-       end
+            file '/etc/nginx/nginx.conf' do |config|
+              config.content = 'foo bar'
+            end
+
+            exec :sudo, 'ln -s /etc/nginx/sites-available/example.org /etc/nginx/sites-enabled/example.org'
+            exec 'touch ~/install_notes.txt'
+          end
         EOS
 
         nimanfile = <<-EOS
@@ -118,6 +170,14 @@ describe Niman::CLI::Application do
 
       it 'writes /etc/nginx/nginx.conf' do
         expect(shell).to have_received(:create_file).with('/etc/nginx/nginx.conf', 'foo bar')
+      end
+
+      it 'links /etc/nginx/sites-available/example.org' do
+        expect(shell).to have_received(:exec).with('ln -s /etc/nginx/sites-available/example.org /etc/nginx/sites-enabled/example.org', true)
+      end
+
+      it 'creates install_notes.txt in home directory' do
+        expect(shell).to have_received(:exec).with('touch ~/install_notes.txt', false)
       end
     end
   end
