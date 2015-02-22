@@ -50,26 +50,6 @@ describe Niman::Library::File do
     end
   end
 
-  describe "#run" do
-    let(:path) { 'hello.txt' }
-    let(:content) { 'FooBar' }
-    subject(:file) { Niman::Library::File.new(path: path, content: content) }
-    before do
-      file.run
-    end
-    after do
-      File.delete(path)
-    end
-
-    it 'creates a file at path' do
-      expect(File.exists?(path)).to be true
-    end
-
-    it 'file has expected content' do
-      expect(File.read(path)).to eq content
-    end
-  end
-
   describe "#description" do
     let(:path) { 'hello.txt' }
     subject(:file) { Niman::Library::File.new(path: path) }
