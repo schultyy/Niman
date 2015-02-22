@@ -109,6 +109,17 @@ describe Niman::CLI::Application do
   end
 
   describe "custom package" do
+    def create_package(name, content, filename)
+      nginx_package = <<-EOS
+          require 'niman'
+
+          class #{name} < Niman::Library::CustomPackage
+            #{content}
+          end
+      EOS
+      FileUtils.mkdir("packages")
+      File.open(filename, "w") {|h| h.write(nginx_package)}
+    end
     context 'is nonexistant' do
       before do
         nimanfile = <<-EOS
@@ -131,9 +142,6 @@ describe Niman::CLI::Application do
     context 'is existant' do
       before do
         nginx_package = <<-EOS
-          require 'niman'
-
-          class Nginx < Niman::Library::CustomPackage
             package_name :debian, 'nginx'
 
             file '/etc/nginx/nginx.conf' do |config|
@@ -142,19 +150,17 @@ describe Niman::CLI::Application do
 
             exec :sudo, 'ln -s /etc/nginx/sites-available/example.org /etc/nginx/sites-enabled/example.org'
             exec 'touch ~/install_notes.txt'
-          end
         EOS
 
         nimanfile = <<-EOS
-      #-*- mode: ruby -*-
-      # vi: set ft=ruby :
-      require 'niman'
-      Niman::Recipe.configure do |config|
-        config.package "packages/nginx" 
-      end
+          #-*- mode: ruby -*-
+          # vi: set ft=ruby :
+          require 'niman'
+          Niman::Recipe.configure do |config|
+            config.package "packages/nginx" 
+          end
         EOS
-        FileUtils.mkdir("packages")
-        File.open("packages/nginx.rb", "w") {|h| h.write(nginx_package)}
+        create_package('Nginx', nginx_package, "packages/nginx.rb")
         File.open(Niman::Recipe::DEFAULT_FILENAME, "w") {|h| h.write(nimanfile)}
         allow(shell).to receive(:create_file)
         allow(shell).to receive(:exec)
@@ -184,6 +190,45 @@ describe Niman::CLI::Application do
         expect(shell).to have_received(:exec).with("apt-get -y install nginx", true).ordered
         expect(shell).to have_received(:create_file).with('/etc/nginx/nginx.conf', 'foo bar').ordered
         expect(shell).to have_received(:exec).with('ln -s /etc/nginx/sites-available/example.org /etc/nginx/sites-enabled/example.org', true).ordered
+      end
+    end
+
+    context 'without package_name' do
+      before do
+        custom_ruby_package = <<-EOS
+          exec '\\curl -sSL https://get.rvm.io | bash -s stable'
+          exec 'rvm install ruby --latest'
+        EOS
+        
+        nimanfile = <<-EOS
+          #-*- mode: ruby -*-
+          # vi: set ft=ruby :
+          require 'niman'
+          Niman::Recipe.configure do |config|
+            config.package "packages/ruby"
+          end
+        EOS
+
+        create_package('Ruby', custom_ruby_package, 'packages/ruby.rb')
+        File.open(Niman::Recipe::DEFAULT_FILENAME, "w") {|h| h.write(nimanfile)}
+        allow(shell).to receive(:create_file)
+        allow(shell).to receive(:exec)
+        application.apply
+      end
+      after do
+        FileUtils.rm_r("packages")
+      end
+
+      it 'does not execute package manager commands' do
+        expect(shell).to_not have_received(:exec).with('apt get -y install')
+      end
+
+      it 'executes curl command' do
+        expect(shell).to have_received(:exec).with('\curl -sSL https://get.rvm.io | bash -s stable', false)
+      end
+
+      it 'installs latest ruby' do
+        expect(shell).to have_received(:exec).with('rvm install ruby --latest',false)
       end
     end
   end

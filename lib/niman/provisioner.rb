@@ -53,7 +53,7 @@ module Niman
     end
 
     def custom_package_files(instruction)
-      instruction.files.each do |file|
+      Array(instruction.files).each do |file|
         @filehandler.run(file)
       end
     end
