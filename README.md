@@ -78,7 +78,9 @@ class RubyPackage < Niman::Package
   package_name :centos, "ruby1.9.1"
 end
 ```
+
 In your `Nimanfile`:
+
 ```ruby
 Niman::Recipe.configure do |config|
   config.package "packages/ruby"
@@ -100,6 +102,18 @@ class NginxPackage < Niman::Package
   file '/etc/nginx/sites-available/example.com' do |config|
     config.content = '...'
   end
+end
+```
+
+A custom package can also be used as a container for a bunch of configuration files
+and shell commands without the need to specify `package_names`:
+
+```ruby
+#packages/ruby
+require 'niman'
+class RubyPackage < Niman::Library::CustomPackage
+  exec '\\curl -sSL https://get.rvm.io | bash -s stable'
+  exec 'rvm install ruby --latest'
 end
 ```
 
