@@ -179,6 +179,12 @@ describe Niman::CLI::Application do
       it 'creates install_notes.txt in home directory' do
         expect(shell).to have_received(:exec).with('touch ~/install_notes.txt', false)
       end
+
+      it 'installs package before creating configuration' do
+        expect(shell).to have_received(:exec).with("apt-get -y install nginx", true).ordered
+        expect(shell).to have_received(:create_file).with('/etc/nginx/nginx.conf', 'foo bar').ordered
+        expect(shell).to have_received(:exec).with('ln -s /etc/nginx/sites-available/example.org /etc/nginx/sites-enabled/example.org', true).ordered
+      end
     end
   end
 end

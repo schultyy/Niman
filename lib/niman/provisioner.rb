@@ -23,18 +23,19 @@ module Niman
       raise Niman::ConfigError, self.errors unless self.valid?
       @instructions.each do |instruction|
         yield(instruction) if block_given?
-        if instruction.respond_to?(:files)
-          custom_package_files(instruction)
-        end
-        if instruction.respond_to?(:commands)
-          custom_package_exec(instruction)
-        end
         if is_file(instruction)
           @filehandler.run(instruction)
         elsif instruction.respond_to?(:command)
           command(instruction)
         else
           @installer.install(instruction)
+        end
+
+        if instruction.respond_to?(:files)
+          custom_package_files(instruction)
+        end
+        if instruction.respond_to?(:commands)
+          custom_package_exec(instruction)
         end
       end
     end
