@@ -27,10 +27,6 @@ describe Niman::Library::CustomPackage do
       package.instance_variable_set(:@package_names, {})
     end
 
-    it 'is not valid when package_names not set' do
-      expect(package.valid?).to be false
-    end
-
     it 'is not valid when package name is empty' do
       package.package_name :ubuntu, ''
       expect(package.valid?).to be false

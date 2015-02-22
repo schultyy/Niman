@@ -18,6 +18,10 @@ module Niman
       def errors
         'package name must not be empty'
       end
+
+      def installable?
+        true
+      end
     end
   end
 end

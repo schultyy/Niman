@@ -5,9 +5,15 @@ module Niman
         attr_reader :package_names, :files, :commands
 
         def valid?
-          !package_names.nil? &&
-          !package_names.empty? &&
-          package_names.keys.all?{|k| !package_names[k].empty?}
+          if installable?
+            package_names.keys.all?{|k| !package_names[k].empty?}
+          else
+            true
+          end
+        end
+
+        def installable?
+          !package_names.nil? && !package_names.empty?
         end
 
         def package_name(os, name)
