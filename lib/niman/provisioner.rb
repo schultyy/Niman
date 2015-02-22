@@ -29,7 +29,7 @@ module Niman
         if instruction.respond_to?(:commands)
           custom_package_exec(instruction)
         end
-        if instruction.respond_to?(:run)
+        if is_file(instruction)
           @filehandler.run(instruction)
         elsif instruction.respond_to?(:command)
           command(instruction)
@@ -40,6 +40,11 @@ module Niman
     end
 
     private
+
+    def is_file(instruction)
+      instruction.respond_to?(:path) && 
+        instruction.respond_to?(:content)
+    end
 
     def custom_package_exec(instruction)
       return if instruction.commands.nil?
