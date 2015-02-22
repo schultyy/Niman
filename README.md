@@ -73,7 +73,7 @@ Package description:
 ```ruby
 #packages/ruby.rb
 require 'niman'
-class RubyPackage < Niman::Package
+class RubyPackage < Niman::CustomPackage
   package_name :ubuntu, "ruby1.9.1"
   package_name :centos, "ruby1.9.1"
 end
@@ -89,7 +89,7 @@ A custom package can have one or more configuration files inside of it:
 
 ```ruby
 #packages/nginx
-class NginxPackage < Niman::Package
+class NginxPackage < Niman::CustomPackage
   package_name :ubuntu, 'nginx'
   
   file '/etc/nginx/nginx.conf' do |config|
