@@ -45,13 +45,13 @@ module VagrantPlugins
       end
     end
 
-    def create_file(path, content, use_sudo=false)
+    def create_file(path, content)
       if content.include?("\n")
         cmd = "cat > #{path} << EOL\n#{content}\nEOL"
       else
         cmd  = "echo #{content} > #{path}"
       end
-      self.exec(cmd, use_sudo)
+      self.exec(cmd, true)
     end
 
     private
