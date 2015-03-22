@@ -6,7 +6,7 @@ module Niman
   class Installer
     include Virtus.model
 
-    attribute :managers, Hash[Symbol=>String], default: Hash.new
+    attribute :managers, Hash[Symbol=>Object], default: Hash.new
     attribute :shell, Object
 
     def install(packages)
@@ -20,9 +20,9 @@ module Niman
       return unless package.installable?
       if package.respond_to?(:package_names)
         package_name = package.package_names.fetch(shell.os.to_sym) { raise Niman::InstallError, "Package has no support for #{shell.os}" }
-        shell.exec("#{package_manager} install #{package_name}", true)
+        shell.exec("#{package_manager.install_command} #{package_name}",true)
       elsif package.respond_to?(:name)
-        shell.exec("#{package_manager} install #{package.name}", true)
+        shell.exec("#{package_manager.install_command} #{package.name}",true)
       end
     end
   end
