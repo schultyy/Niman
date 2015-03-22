@@ -6,6 +6,7 @@ require "niman/installer"
 require "niman/exceptions"
 require "niman/filehandler"
 require "niman/package_resolver"
+require "niman/package_manager"
 
 module Niman
   module CLI
@@ -23,11 +24,8 @@ module Niman
         begin
           Niman::Recipe.from_file(file)
           config = Niman::Recipe.configuration
-          installer = Niman::Installer.new(shell: client_shell, managers:{
-            debian: 'apt-get -y',
-            redhat: 'yum -y'
-          })
-
+          installer = Niman::Installer.new(shell: client_shell,
+                                           managers: load_package_managers)
           resolver    = Niman::PackageResolver.new(config.instructions)
           filehandler = Niman::FileHandler.new(client_shell)
           provisioner = Niman::Provisioner.new(installer, filehandler, @client_shell, resolver.resolve)
@@ -52,6 +50,18 @@ end
         EOS
         File.open(filename, "w") { |handle| handle.write(content) }
         say "Created new file #{filename}"
+      end
+      private
+      def load_package_managers
+        managers = {}
+        managers[:debian] = Niman::PackageManager.new(
+         :os => :debian,
+         :install_command => 'apt-get -y install')
+        managers[:redhat] = Niman::PackageManager.new(
+          :os => :redhat,
+          :install_command => 'yum -y install'
+        )
+        managers
       end
     end
   end
