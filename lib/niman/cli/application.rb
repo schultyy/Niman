@@ -25,7 +25,7 @@ module Niman
           Niman::Recipe.from_file(file)
           config = Niman::Recipe.configuration
           installer = Niman::Installer.new(shell: client_shell,
-                                           managers: load_package_managers)
+                                           package_manager: load_package_manager)
           resolver    = Niman::PackageResolver.new(config.instructions)
           filehandler = Niman::FileHandler.new(client_shell)
           provisioner = Niman::Provisioner.new(installer, filehandler, @client_shell, resolver.resolve)
@@ -52,16 +52,17 @@ end
         say "Created new file #{filename}"
       end
       private
-      def load_package_managers
+      def load_package_manager
         managers = {}
         managers[:debian] = Niman::PackageManager.new(
          :os => :debian,
-         :install_command => 'apt-get -y install')
+         :install_command => 'apt-get -y install',
+         :shell => @client_shell)
         managers[:redhat] = Niman::PackageManager.new(
           :os => :redhat,
-          :install_command => 'yum -y install'
-        )
-        managers
+          :install_command => 'yum -y install',
+          :shell => @client_shell)
+        managers.fetch(@client_shell.os.to_sym) { raise Niman::InstallError, @client_shell.os }
       end
     end
   end
