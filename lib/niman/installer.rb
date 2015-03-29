@@ -18,7 +18,6 @@ module Niman
     def install_package(package)
       return unless package.installable?
       shell = package_manager.shell
-      puts "SHELL #{shell.inspect}"
       if package.respond_to?(:package_names)
         package_name = package.package_names.fetch(shell.os.to_sym) { raise Niman::InstallError, "Package has no support for #{shell.os}" }
         package_manager.install(package_name)
