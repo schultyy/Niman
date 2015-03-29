@@ -20,10 +20,10 @@ module Niman
       shell = package_manager.shell
       if package.respond_to?(:package_names)
         package_name = package.package_names.fetch(shell.os.to_sym) { raise Niman::InstallError, "Package has no support for #{shell.os}" }
-        package_manager.install(package_name)
       elsif package.respond_to?(:name)
-        package_manager.install(package.name)
+        package_name = package.name
       end
+      package_manager.install(package_name)
     end
   end
 end
