@@ -14,9 +14,13 @@ module Niman
 
     def installed?(package_name)
       return false if search_command.nil?
-      result = shell.exec("#{search_command} #{package_name}")
-      return false if result.nil?
-      result.scan(/Status: install ok installed/).length > 0
+      case shell.exec("#{search_command} #{package_name}")
+        when nil
+        when 1
+          false
+        when 0
+          true
+      end
     end
   end
 end

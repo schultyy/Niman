@@ -11,12 +11,7 @@ describe Niman::CLI::Application do
     application.client_shell = shell
     application.silent = true
     allow(shell).to receive(:os).and_return(:debian)
-    search_result = <<-EOS
-            dpkg-query: package '' is not installed and no information is available
-            Use dpkg --info (= dpkg-deb --info) to examine archive files,
-            and dpkg --contents (= dpkg-deb --contents) to list their contents.
-    EOS
-    allow(shell).to receive(:exec).with(/dpkg -s/).and_return(search_result)
+    allow(shell).to receive(:exec).with(/dpkg -s/).and_return(1)
   end
 
   after do
@@ -124,39 +119,8 @@ describe Niman::CLI::Application do
       end
       EOS
       File.open(Niman::Recipe::DEFAULT_FILENAME, "w") {|h| h.write(nimanfile)}
-      package_result_not_installed = <<-EOS
-      dpkg-query: package 'vim' is not installed and no information is available
-      Use dpkg --info (= dpkg-deb --info) to examine archive files,
-      and dpkg --contents (= dpkg-deb --contents) to list their contents.
-      EOS
-      package_result_installed = <<-EOS
-      Package: vim
-      Status: install ok installed
-      Priority: optional
-      Section: editors
-      Installed-Size: 2185
-      Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
-      Architecture: amd64
-      Version: 2:7.4.052-1ubuntu3
-      Provides: editor
-      Depends: vim-common (= 2:7.4.052-1ubuntu3), vim-runtime (= 2:7.4.052-1ubuntu3), libacl1 (>= 2.2.51-8), libc6 (>= 2.15), libgpm2 (>= 1.20.4), libpython2.7 (>= 2.7), libselinux1 (>= 1.32), libtinfo5
-      Suggests: ctags, vim-doc, vim-scripts
-      Description: Vi IMproved - enhanced vi editor
-       Vim is an almost compatible version of the UNIX editor Vi.
-          .
-           Many new features have been added: multi level undo, syntax
-        highlighting, command line history, on-line help, filename
-         completion, block operations, folding, Unicode support, etc.
-            .
-             This package contains a version of vim compiled with a rather
-          standard set of features.  This package does not provide a GUI
-           version of Vim.  See the other vim-* packages if you need more
-            (or less).
-              Homepage: http://www.vim.org/
-              Original-Maintainer: Debian Vim Maintainers <pkg-vim-maintainers@lists.alioth.debian.org>
-      EOS
       allow(shell).to receive(:exec).with("apt-get -y install vim", true)
-      allow(shell).to receive(:exec).with("dpkg -s vim").and_return(package_result_not_installed, package_result_installed)
+      allow(shell).to receive(:exec).with("dpkg -s vim").and_return(1, 0)
       application.apply
       application.apply
     end
