@@ -1,0 +1,7 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+Niman::Recipe.configure do |config|
+  ["vim"].each do |name|
+    config.package { |package| package.name = name }
+  end
+end
