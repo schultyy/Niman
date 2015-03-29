@@ -23,7 +23,9 @@ module Niman
       elsif package.respond_to?(:name)
         package_name = package.name
       end
-      package_manager.install(package_name)
+      unless package_manager.installed?(package_name)
+        package_manager.install(package_name)
+      end
     end
   end
 end

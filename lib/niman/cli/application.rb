@@ -22,6 +22,7 @@ module Niman
       desc "apply [NIMANFILE]", "Applies a Nimanfile"
       def apply(file='Nimanfile')
         begin
+          Niman::Recipe.reset
           Niman::Recipe.from_file(file)
           config = Niman::Recipe.configuration
           installer = Niman::Installer.new(shell: client_shell,
@@ -57,10 +58,12 @@ end
         managers[:debian] = Niman::PackageManager.new(
          :os => :debian,
          :install_command => 'apt-get -y install',
+         :search_command => 'dpkg -s',
          :shell => @client_shell)
         managers[:redhat] = Niman::PackageManager.new(
           :os => :redhat,
           :install_command => 'yum -y install',
+          :search_command => '',
           :shell => @client_shell)
         managers.fetch(@client_shell.os.to_sym) { raise Niman::InstallError, @client_shell.os }
       end
