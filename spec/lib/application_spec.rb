@@ -11,6 +11,7 @@ describe Niman::CLI::Application do
     application.client_shell = shell
     application.silent = true
     allow(shell).to receive(:os).and_return(:debian)
+    allow(shell).to receive(:exec).with(/dpkg -s/).and_return(1)
   end
 
   after do
@@ -108,6 +109,37 @@ describe Niman::CLI::Application do
     end
   end
 
+  describe "installing a package twice" do
+    before do
+      nimanfile = <<-EOS
+      #-*- mode: ruby -*-
+      # vi: set ft=ruby :
+      Niman::Recipe.configure do |config|
+        config.package { |p| p.name = 'vim' }
+      end
+      EOS
+      File.open(Niman::Recipe::DEFAULT_FILENAME, "w") {|h| h.write(nimanfile)}
+      allow(shell).to receive(:exec).with("apt-get -y install vim", true)
+      allow(shell).to receive(:exec).with("dpkg -s vim").and_return(1, 0)
+      application.apply
+      application.apply
+    end
+
+    it 'checks if package is installed' do
+      expect(shell).to have_received(:exec).with("dpkg -s vim").twice
+    end
+
+    it 'does not lead to a second install' do
+      count = 0
+      expect(shell).to have_received(:exec).exactly(3).times do |arg| #.with()
+        if arg == "apt-get -y install vim"
+          count += 1
+        end
+      end
+      expect(count).to eq 1
+    end
+  end
+
   describe "custom package" do
     def create_package(name, content, filename)
       nginx_package = <<-EOS
@@ -127,7 +159,7 @@ describe Niman::CLI::Application do
             # vi: set ft=ruby :
             require 'niman'
             Niman::Recipe.configure do |config|
-              config.package "packages/nginx" 
+              config.package "packages/nginx"
             end
         EOS
         File.open(Niman::Recipe::DEFAULT_FILENAME, "w") {|h| h.write(nimanfile)}
@@ -157,7 +189,7 @@ describe Niman::CLI::Application do
           # vi: set ft=ruby :
           require 'niman'
           Niman::Recipe.configure do |config|
-            config.package "packages/nginx" 
+            config.package "packages/nginx"
           end
         EOS
         create_package('Nginx', nginx_package, "packages/nginx.rb")
@@ -199,7 +231,7 @@ describe Niman::CLI::Application do
           exec '\\curl -sSL https://get.rvm.io | bash -s stable'
           exec 'rvm install ruby --latest'
         EOS
-        
+
         nimanfile = <<-EOS
           #-*- mode: ruby -*-
           # vi: set ft=ruby :

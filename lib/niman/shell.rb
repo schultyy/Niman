@@ -8,7 +8,7 @@ module Niman
 
     def os
       if @platform.linux?
-        variant = @platform.linux_variant(-> (fn){ File.exists?(fn)}, 
+        variant = @platform.linux_variant(-> (fn){ File.exists?(fn)},
                                 -> (fn){ File.read(fn)})
         variant[:family]
       else
@@ -18,9 +18,9 @@ module Niman
 
     def exec(command, use_sudo=false)
       if use_sudo
-        `sudo #{command}`
+        system("sudo #{command}")
       else
-        `#{command}`
+        system("#{command}")
       end
     end
 

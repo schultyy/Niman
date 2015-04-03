@@ -1,13 +1,13 @@
 require 'virtus'
 require 'niman/exceptions'
 require 'niman/package_resolver'
+require 'niman/package_manager'
 
 module Niman
   class Installer
     include Virtus.model
 
-    attribute :managers, Hash[Symbol=>Object], default: Hash.new
-    attribute :shell, Object
+    attribute :package_manager, Niman::PackageManager
 
     def install(packages)
       Array(packages).each do |package|
@@ -16,13 +16,15 @@ module Niman
     end
 
     def install_package(package)
-      package_manager = managers.fetch(shell.os.to_sym) { raise Niman::InstallError, shell.os }
       return unless package.installable?
+      shell = package_manager.shell
       if package.respond_to?(:package_names)
         package_name = package.package_names.fetch(shell.os.to_sym) { raise Niman::InstallError, "Package has no support for #{shell.os}" }
-        shell.exec("#{package_manager.install_command} #{package_name}",true)
       elsif package.respond_to?(:name)
-        shell.exec("#{package_manager.install_command} #{package.name}",true)
+        package_name = package.name
+      end
+      unless package_manager.installed?(package_name)
+        package_manager.install(package_name)
       end
     end
   end
